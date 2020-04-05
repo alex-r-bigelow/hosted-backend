@@ -1,0 +1,44 @@
+@import './fonts.less';
+@import './colors.less';
+@import './measurements.less';
+
+@import './buttons.less';
+
+@import './goldenlayout-base.less';
+@import './goldenlayout-custom-theme.less';
+
+html, body {
+  padding: 0;
+  margin: 0;
+}
+body {
+  font-family: @bodyFontFamily;
+  font-weight: @bodyFontWeight;
+  color: @textColor;
+}
+h1, h2, h3, h4, h5, h6, .lm_header .lm_tab {
+  font-family: @headerFontFamily;
+  font-weight: @headerFontWeight;
+}
+pre, code {
+  font-family: @fixedFontFamily;
+  font-weight: @fixedFontWeight;
+}
+
+#background {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  background: @backgroundGradient;
+}
+
+#layoutRoot {
+  overflow: hidden;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+}

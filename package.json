@@ -1,0 +1,27 @@
+{
+  "name": "uki-goldenlayout-boilerplate",
+  "version": "0.1.0",
+  "description": "Boilerplate for a GoldenLayout-based uki app",
+  "main": "index.js",
+  "scripts": {
+    "serve": "serve ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex-r-bigelow/uki-goldenlayout-boilerplate.git"
+  },
+  "author": "Alex Bigelow",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alex-r-bigelow/uki-goldenlayout-boilerplate/issues"
+  },
+  "homepage": "https://github.com/alex-r-bigelow/uki-goldenlayout-boilerplate#readme",
+  "dependencies": {
+    "d3": "^5.15.0",
+    "golden-layout": "^1.5.9",
+    "jquery": "^3.4.1",
+    "less": "^3.11.1",
+    "serve": "^11.3.0",
+    "uki": "^0.5.0"
+  }
+}

@@ -1,2 +1,2 @@
-# uki-goldenlayout-boilerplate
-Boilerplate for a GoldenLayout-based uki app
+# hosted-backend
+Prototype for managing HOSTED housing assignments

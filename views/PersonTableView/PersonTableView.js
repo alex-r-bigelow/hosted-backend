@@ -1,16 +1,16 @@
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
 import SvgViewMixin from '../common/SvgViewMixin.js';
 
-class SvgTestView extends SvgViewMixin(GoldenLayoutView) {
+class PersonTableView extends SvgViewMixin(GoldenLayoutView) {
   constructor (argObj) {
     argObj.resources = [
-      { type: 'less', url: './views/SvgTestView/style.less' },
-      { type: 'text', url: './views/SvgTestView/template.svg' }
+      { type: 'less', url: './views/PersonTableView/style.less' },
+      { type: 'text', url: './views/PersonTableView/template.svg' }
     ];
     super(argObj);
   }
   get title () {
-    return 'SVG Test View';
+    return 'People';
   }
   get isEmpty () {
     return true;
@@ -21,7 +21,7 @@ class SvgTestView extends SvgViewMixin(GoldenLayoutView) {
     this.content.html(this.resources[1]);
 
     // Fill the emptyStateDiv with our warning
-    this.emptyStateDiv.html('<h3>View under construction</h3>');
+    this.emptyStateDiv.html('<h3>TODO: Table of people</h3>');
   }
   draw () {
     super.draw();
@@ -33,4 +33,4 @@ class SvgTestView extends SvgViewMixin(GoldenLayoutView) {
   }
 }
 
-export default SvgTestView;
+export default PersonTableView;

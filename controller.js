@@ -6,14 +6,20 @@ import TooltipView from './views/TooltipView/TooltipView.js';
 import ModalView from './views/ModalView/ModalView.js';
 
 // Main views in the app
-import SvgTestView from './views/SvgTestView/SvgTestView.js';
-import IFrameTestView from './views/IFrameTestView/IFrameTestView.js';
+import PersonTableView from './views/PersonTableView/PersonTableView.js';
+import AssignmentView from './views/AssignmentView/AssignmentView.js';
+import AssignmentHistoryView from './views/AssignmentHistoryView/AssignmentHistoryView.js';
+import MapView from './views/MapView/MapView.js';
+import HouseTableView from './views/HouseTableView/HouseTableView.js';
 
 import recolorImageFilter from './utils/recolorImageFilter.js';
 
 const viewClassLookup = {
-  SvgTestView,
-  IFrameTestView
+  PersonTableView,
+  AssignmentView,
+  AssignmentHistoryView,
+  MapView,
+  HouseTableView
 };
 
 class Controller extends Model {
@@ -46,14 +52,34 @@ class Controller extends Model {
         type: 'row',
         isCloseable: false,
         content: [{
-          type: 'component',
-          componentName: 'SvgTestView',
-          componentState: {}
-        },
-        {
-          type: 'component',
-          componentName: 'IFrameTestView',
-          componentState: {}
+          type: 'column',
+          content: [{
+            type: 'component',
+            componentName: 'PersonTableView',
+            componentState: {}
+          },
+          {
+            type: 'component',
+            componentName: 'AssignmentView',
+            componentState: {}
+          },
+          {
+            type: 'component',
+            componentName: 'AssignmentHistoryView',
+            componentState: {}
+          }]
+        }, {
+          type: 'column',
+          content: [{
+            type: 'component',
+            componentName: 'MapView',
+            componentState: {}
+          },
+          {
+            type: 'component',
+            componentName: 'HouseTableView',
+            componentState: {}
+          }]
         }]
       }]
     }, d3.select('#layoutRoot').node());

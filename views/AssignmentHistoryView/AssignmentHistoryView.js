@@ -1,35 +1,40 @@
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
-import SvgViewMixin from '../common/SvgViewMixin.js';
+import TableViewMixin from '../common/TableViewMixin.js';
 
-class AssignmentHistoryView extends SvgViewMixin(GoldenLayoutView) {
+class AssignmentHistoryView extends TableViewMixin(GoldenLayoutView) {
   constructor (argObj) {
     argObj.resources = [
-      { type: 'less', url: './views/AssignmentHistoryView/style.less' },
-      { type: 'text', url: './views/AssignmentHistoryView/template.svg' }
+      { type: 'less', url: './views/AssignmentHistoryView/style.less' }
     ];
     super(argObj);
+
+    window.controller.appState.on('houseSelection', () => {
+      this.render();
+    });
+    window.controller.appState.on('peopleSelection', () => {
+      this.render();
+    });
+    window.controller.appState.on('assignmentMade', () => {
+      this.render();
+    });
   }
   get title () {
     return 'History';
   }
-  get isEmpty () {
-    return true;
+  getTableHeaders () {
+    return ['Case Worker', 'Person Timestamp', 'House Timestamp'];
   }
-  setup () {
-    super.setup();
-    // Apply the template
-    this.content.html(this.resources[1]);
-
-    // Fill the emptyStateDiv with our warning
-    this.emptyStateDiv.html('<h3>TODO: table of a person\'s assignment history</h3>');
+  getTableRows () {
+    return window.controller.assignments.table;
   }
   draw () {
     super.draw();
 
-    if (this.isHidden || this.isLoading) {
-      return;
-    }
-    console.log('TODO: implement draw()');
+    this.rows
+      .on('click', row => {
+        window.controller.appState.selectHouse(row['House Timestamp']);
+        window.controller.appState.selectPerson(row['Person Timestamp']);
+      });
   }
 }
 

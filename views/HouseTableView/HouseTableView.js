@@ -1,35 +1,36 @@
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
-import SvgViewMixin from '../common/SvgViewMixin.js';
+import TableViewMixin from '../common/TableViewMixin.js';
 
-class HouseTableView extends SvgViewMixin(GoldenLayoutView) {
+class HouseTableView extends TableViewMixin(GoldenLayoutView) {
   constructor (argObj) {
     argObj.resources = [
-      { type: 'less', url: './views/HouseTableView/style.less' },
-      { type: 'text', url: './views/HouseTableView/template.svg' }
+      { type: 'less', url: './views/HouseTableView/style.less' }
     ];
     super(argObj);
+
+    window.controller.appState.on('houseSelection', () => {
+      this.render();
+    });
   }
   get title () {
-    return 'House table';
+    return 'Properties';
   }
-  get isEmpty () {
-    return true;
+  getTableHeaders () {
+    return Object.keys(window.controller.houses.table[0]);
   }
-  setup () {
-    super.setup();
-    // Apply the template
-    this.content.html(this.resources[1]);
-
-    // Fill the emptyStateDiv with our warning
-    this.emptyStateDiv.html('<h3>TODO: table of houses</h3>');
+  getTableRows () {
+    return window.controller.houses.table;
   }
   draw () {
     super.draw();
 
-    if (this.isHidden || this.isLoading) {
-      return;
-    }
-    console.log('TODO: implement draw()');
+    this.rows
+      .classed('selected', row => {
+        return row.Timestamp === window.controller.appState.selectedHouseTimestamp;
+      })
+      .on('click', row => {
+        window.controller.appState.selectHouse(row.Timestamp);
+      });
   }
 }
 

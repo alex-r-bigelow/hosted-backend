@@ -1,3 +1,12 @@
-.SvgTestView {
-
+.PersonTableView {
+  tbody tr {
+    cursor: pointer;
+    &:hover {
+      background-color: #ccc;
+    }
+    &.selected {
+      background-color: #333;
+      color: white;
+    }
+  }
 }

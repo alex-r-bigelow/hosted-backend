@@ -12,7 +12,7 @@ const ImgViewMixin = function (superclass) {
         .on('load', () => { this.trigger('viewLoaded'); });
     }
     getAvailableSpace () {
-      // Don't rely on non-dynamic SVG width / height for available space; use
+      // Don't rely on non-dynamic img width / height for available space; use
       // this.d3el instead
       return super.getAvailableSpace(this.d3el);
     }

@@ -1,6 +1,12 @@
 /* globals d3, less, GoldenLayout */
 import { Model } from './node_modules/uki/dist/uki.esm.js';
 
+// Models for managing datasets and state
+import People from './models/People.js';
+import Houses from './models/Houses.js';
+import Assignments from './models/Assignments.js';
+import AppState from './models/AppState.js';
+
 // General-purpose views
 import TooltipView from './views/TooltipView/TooltipView.js';
 import ModalView from './views/ModalView/ModalView.js';
@@ -11,6 +17,7 @@ import AssignmentView from './views/AssignmentView/AssignmentView.js';
 import AssignmentHistoryView from './views/AssignmentHistoryView/AssignmentHistoryView.js';
 import MapView from './views/MapView/MapView.js';
 import HouseTableView from './views/HouseTableView/HouseTableView.js';
+import PropertyDetailsView from './views/PropertyDetailsView/PropertyDetailsView.js';
 
 import recolorImageFilter from './utils/recolorImageFilter.js';
 
@@ -19,12 +26,19 @@ const viewClassLookup = {
   AssignmentView,
   AssignmentHistoryView,
   MapView,
-  HouseTableView
+  HouseTableView,
+  PropertyDetailsView
 };
 
 class Controller extends Model {
   constructor () {
     super();
+
+    this.people = new People();
+    this.houses = new Houses();
+    this.assignments = new Assignments();
+    this.appState = new AppState();
+
     this.modal = new ModalView();
     this.tooltip = new TooltipView();
     this.setupLayout();
@@ -60,13 +74,23 @@ class Controller extends Model {
           },
           {
             type: 'component',
-            componentName: 'AssignmentView',
+            componentName: 'HouseTableView',
             componentState: {}
           },
           {
-            type: 'component',
-            componentName: 'AssignmentHistoryView',
-            componentState: {}
+            type: 'row',
+            content: [
+              {
+                type: 'component',
+                componentName: 'AssignmentView',
+                componentState: {}
+              },
+              {
+                type: 'component',
+                componentName: 'AssignmentHistoryView',
+                componentState: {}
+              }
+            ]
           }]
         }, {
           type: 'column',
@@ -77,7 +101,7 @@ class Controller extends Model {
           },
           {
             type: 'component',
-            componentName: 'HouseTableView',
+            componentName: 'PropertyDetailsView',
             componentState: {}
           }]
         }]

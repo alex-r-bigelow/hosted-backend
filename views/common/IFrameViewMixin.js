@@ -14,8 +14,10 @@ const IFrameViewMixin = function (superclass) {
       return this._src;
     }
     set src (src) {
-      this.frameLoaded = false;
+      this.frameLoaded = !src;
       this._src = src;
+      this.d3el.select('iframe')
+        .attr('src', this._src);
       this.render();
     }
     setupContentElement () {

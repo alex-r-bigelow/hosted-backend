@@ -13,10 +13,18 @@ class AppState extends Model {
     this.selectedHospital = null;
   }
   selectPerson (timestamp, keepPrior = false) {
-    if (!keepPrior) {
-      this.selectedPeopleTimestamps = [];
+    if (keepPrior) {
+      // Toggle
+      const index = this.selectedPeopleTimestamps.indexOf(timestamp);
+      if (index === -1) {
+        this.selectedPeopleTimestamps.push(timestamp);
+      } else {
+        this.selectedPeopleTimestamps.splice(index, 1);
+      }
+    } else {
+      // Set
+      this.selectedPeopleTimestamps = [timestamp];
     }
-    this.selectedPeopleTimestamps.push(timestamp);
     this.trigger('peopleSelection');
   }
   selectHouse (timestamp) {
@@ -26,6 +34,12 @@ class AppState extends Model {
   selectHospital (id) {
     this.selectedHospital = id;
     // TODO: add a personFilter AND a housingFilter
+  }
+  clearSelections () {
+    this.selectedHouseTimestamp = null;
+    this.selectedPeopleTimestamps = [];
+    this.trigger('peopleSelection');
+    this.trigger('houseSelection');
   }
 }
 

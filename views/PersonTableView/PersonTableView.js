@@ -1,35 +1,39 @@
+/* globals d3 */
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
-import SvgViewMixin from '../common/SvgViewMixin.js';
+import TableViewMixin from '../common/TableViewMixin.js';
 
-class PersonTableView extends SvgViewMixin(GoldenLayoutView) {
+class PersonTableView extends TableViewMixin(GoldenLayoutView) {
   constructor (argObj) {
     argObj.resources = [
-      { type: 'less', url: './views/PersonTableView/style.less' },
-      { type: 'text', url: './views/PersonTableView/template.svg' }
+      { type: 'less', url: './views/PersonTableView/style.less' }
     ];
     super(argObj);
+
+    window.controller.appState.on('peopleSelection', () => {
+      this.render();
+    });
   }
   get title () {
     return 'People';
   }
-  get isEmpty () {
-    return true;
+  getTableHeaders () {
+    return window.controller.people.getHeaders();
   }
-  setup () {
-    super.setup();
-    // Apply the template
-    this.content.html(this.resources[1]);
-
-    // Fill the emptyStateDiv with our warning
-    this.emptyStateDiv.html('<h3>TODO: Table of people</h3>');
+  getTableRows () {
+    return window.controller.people.getTable();
   }
   draw () {
     super.draw();
 
-    if (this.isHidden || this.isLoading) {
-      return;
-    }
-    console.log('TODO: implement draw()');
+    this.rows
+      .classed('selected', row => {
+        return window.controller.appState.selectedPeopleTimestamps
+          .indexOf(row.Timestamp) !== -1;
+      })
+      .on('click', row => {
+        const keepPrior = d3.event.ctrlKey || d3.event.metaKey;
+        window.controller.appState.selectPerson(row.Timestamp, keepPrior);
+      });
   }
 }
 

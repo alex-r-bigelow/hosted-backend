@@ -3,22 +3,20 @@ import IFrameViewMixin from '../common/IFrameViewMixin.js';
 
 class PropertyDetailsView extends IFrameViewMixin(GoldenLayoutView) {
   constructor (argObj) {
-    argObj.resources = [
-      { type: 'less', url: './views/PropertyDetailsView/style.less' }
-    ];
     super(argObj);
 
     this.missingMessage = 'No property selected';
 
     window.controller.appState.on('houseSelection', () => {
       const house = window.controller.houses.selectedHouse;
-      this.src = (house && house.url) || null;
       if (house && house.url) {
         this.src = house.url;
         this.missingMessage = '';
       } else if (house) {
+        this.src = null;
         this.missingMessage = 'Selected property has no URL';
       } else {
+        this.src = null;
         this.missingMessage = 'No property selected';
       }
       this.render();
@@ -29,11 +27,6 @@ class PropertyDetailsView extends IFrameViewMixin(GoldenLayoutView) {
   }
   get isEmpty () {
     return window.controller.appState.selectedHouse === undefined;
-  }
-  setup () {
-    super.setup();
-    // Apply the template
-    this.content.html(this.resources[1]);
   }
   draw () {
     super.draw();

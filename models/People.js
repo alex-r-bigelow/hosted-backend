@@ -8,8 +8,16 @@ class People extends Model {
     // TODO: change this to an uploaded CSV, and later to integrated
     // SurveyMonkey responses
   }
-  get table () {
-    return this.resources[0];
+  getHeaders () {
+    return Object.keys(this.resources[0][0]).concat('lastAssignment');
+  }
+  getTable () {
+    const lastAssignments = window.controller.assignments.getLastAssignments();
+    return this.resources[0].map(person => {
+      const tempPerson = Object.assign({}, person);
+      tempPerson.lastAssignment = lastAssignments[person.Timestamp] || null;
+      return tempPerson;
+    });
   }
 }
 

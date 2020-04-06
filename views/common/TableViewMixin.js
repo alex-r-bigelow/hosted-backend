@@ -43,7 +43,7 @@ const TableViewMixin = function (superclass) {
       const cellsEnter = this.cells.enter().append('td');
       this.cells = this.cells.merge(cellsEnter);
 
-      this.cells.text(d => d || '');
+      this.cells.text(d => d === undefined ? '' : d === null ? 'null' : d);
     }
   };
   TableView.prototype._instanceOfTableViewMixin = true;

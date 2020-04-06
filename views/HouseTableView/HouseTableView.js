@@ -16,10 +16,16 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
     return 'Properties';
   }
   getTableHeaders () {
-    return Object.keys(window.controller.houses.table[0]);
+    const nativeHeaders = Object.keys(window.controller.houses.table[0]);
+    return ['People Assigned'].concat(nativeHeaders);
   }
   getTableRows () {
-    return window.controller.houses.table;
+    const counts = window.controller.assignments.getAssignmentCounts();
+    return window.controller.houses.table.map(row => {
+      return Object.assign({
+        'People Assigned': counts[row.Timestamp] || 0
+      }, row);
+    });
   }
   draw () {
     super.draw();

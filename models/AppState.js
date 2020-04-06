@@ -5,22 +5,22 @@ class AppState extends Model {
     super();
 
     this.personFilters = [];
-    this.selectedPeople = [];
+    this.selectedPeopleTimestamps = [];
 
     this.housingFilters = [];
-    this.selectedHouse = null;
+    this.selectedHouseTimestamp = null;
 
     this.selectedHospital = null;
   }
   selectPerson (timestamp, keepPrior = false) {
     if (!keepPrior) {
-      this.selectedPeople = [];
+      this.selectedPeopleTimestamps = [];
     }
-    this.selectedPeople.push(timestamp);
+    this.selectedPeopleTimestamps.push(timestamp);
     this.trigger('peopleSelection');
   }
   selectHouse (timestamp) {
-    this.selectedHouse = timestamp;
+    this.selectedHouseTimestamp = timestamp;
     this.trigger('houseSelection');
   }
   selectHospital (id) {

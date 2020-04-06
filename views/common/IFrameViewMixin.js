@@ -6,9 +6,17 @@ const IFrameViewMixin = function (superclass) {
         type: 'less', url: './views/common/IFrameViewMixin.less'
       });
       super(argObj);
-      this.src = argObj.src;
+      this._src = argObj._src;
       this._previousBounds = { width: 0, height: 0 };
+      this.frameLoaded = !this.src; // We are loaded if no src is initially provided
+    }
+    get src () {
+      return this._src;
+    }
+    set src (src) {
       this.frameLoaded = false;
+      this._src = src;
+      this.render();
     }
     setupContentElement () {
       return this.d3el.append('iframe')

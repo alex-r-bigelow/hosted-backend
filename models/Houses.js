@@ -10,6 +10,9 @@ class Houses extends Model {
   get table () {
     return this.resources[0];
   }
+  selectedHouse () {
+    return this.table.find(d => d.Timestamp === window.controller.appState.selectedHouseTimestamp);
+  }
 }
 
 export default Houses;

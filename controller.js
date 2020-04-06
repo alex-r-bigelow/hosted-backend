@@ -17,6 +17,7 @@ import AssignmentView from './views/AssignmentView/AssignmentView.js';
 import AssignmentHistoryView from './views/AssignmentHistoryView/AssignmentHistoryView.js';
 import MapView from './views/MapView/MapView.js';
 import HouseTableView from './views/HouseTableView/HouseTableView.js';
+import PropertyDetailsView from './views/PropertyDetailsView/PropertyDetailsView.js';
 
 import recolorImageFilter from './utils/recolorImageFilter.js';
 
@@ -25,7 +26,8 @@ const viewClassLookup = {
   AssignmentView,
   AssignmentHistoryView,
   MapView,
-  HouseTableView
+  HouseTableView,
+  PropertyDetailsView
 };
 
 class Controller extends Model {
@@ -72,7 +74,7 @@ class Controller extends Model {
           },
           {
             type: 'component',
-            componentName: 'AssignmentView',
+            componentName: 'HouseTableView',
             componentState: {}
           },
           {
@@ -89,7 +91,12 @@ class Controller extends Model {
           },
           {
             type: 'component',
-            componentName: 'HouseTableView',
+            componentName: 'PropertyDetailsView',
+            componentState: {}
+          },
+          {
+            type: 'component',
+            componentName: 'AssignmentView',
             componentState: {}
           }]
         }]

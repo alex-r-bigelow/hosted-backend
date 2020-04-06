@@ -17,7 +17,7 @@ class PropertyDetailsView extends IFrameViewMixin(GoldenLayoutView) {
     return 'Property Details';
   }
   get isEmpty () {
-    return window.controller.appState.selectedHouse === null;
+    return window.controller.appState.selectedHouse === undefined;
   }
   setup () {
     super.setup();

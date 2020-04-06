@@ -21,8 +21,9 @@ class MapView extends GoldenLayoutView {
     super.setup();
     // div holding the actual map elements
     let leafletMap = makeMap()
+    this.leafletMap = leafletMap
     // Apply the template; this.content is the div inside the GoldenLayout pane
-    this.content.node().append(leafletMap)
+    this.content.node().append(leafletMap.container)
 
 
 
@@ -32,11 +33,10 @@ class MapView extends GoldenLayoutView {
   }
   draw () {
     super.draw();
-
+    this.leafletMap.mapObj.invalidateSize()
     if (this.isHidden || this.isLoading) {
       return;
     }
-    console.log('TODO: implement draw()');
   }
 }
 

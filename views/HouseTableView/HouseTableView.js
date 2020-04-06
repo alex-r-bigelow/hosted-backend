@@ -10,7 +10,7 @@ class HouseTableView extends SvgViewMixin(GoldenLayoutView) {
     super(argObj);
   }
   get title () {
-    return 'House table';
+    return 'Properties';
   }
   get isEmpty () {
     return true;

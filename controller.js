@@ -78,9 +78,19 @@ class Controller extends Model {
             componentState: {}
           },
           {
-            type: 'component',
-            componentName: 'AssignmentHistoryView',
-            componentState: {}
+            type: 'row',
+            content: [
+              {
+                type: 'component',
+                componentName: 'AssignmentView',
+                componentState: {}
+              },
+              {
+                type: 'component',
+                componentName: 'AssignmentHistoryView',
+                componentState: {}
+              }
+            ]
           }]
         }, {
           type: 'column',
@@ -92,11 +102,6 @@ class Controller extends Model {
           {
             type: 'component',
             componentName: 'PropertyDetailsView',
-            componentState: {}
-          },
-          {
-            type: 'component',
-            componentName: 'AssignmentView',
             componentState: {}
           }]
         }]

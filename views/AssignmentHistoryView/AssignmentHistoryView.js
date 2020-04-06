@@ -1,11 +1,10 @@
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
-import SvgViewMixin from '../common/SvgViewMixin.js';
 
-class AssignmentHistoryView extends SvgViewMixin(GoldenLayoutView) {
+class AssignmentHistoryView extends GoldenLayoutView {
   constructor (argObj) {
     argObj.resources = [
       { type: 'less', url: './views/AssignmentHistoryView/style.less' },
-      { type: 'text', url: './views/AssignmentHistoryView/template.svg' }
+      { type: 'text', url: './views/AssignmentHistoryView/template.html' }
     ];
     super(argObj);
   }

@@ -8,8 +8,19 @@ class PropertyDetailsView extends IFrameViewMixin(GoldenLayoutView) {
     ];
     super(argObj);
 
+    this.missingMessage = 'No property selected';
+
     window.controller.appState.on('houseSelection', () => {
-      this.src = window.controller.houses.selectedHouse;
+      const house = window.controller.houses.selectedHouse;
+      this.src = (house && house.url) || null;
+      if (house && house.url) {
+        this.src = house.url;
+        this.missingMessage = '';
+      } else if (house) {
+        this.missingMessage = 'Selected property has no URL';
+      } else {
+        this.missingMessage = 'No property selected';
+      }
       this.render();
     });
   }
@@ -23,9 +34,12 @@ class PropertyDetailsView extends IFrameViewMixin(GoldenLayoutView) {
     super.setup();
     // Apply the template
     this.content.html(this.resources[1]);
+  }
+  draw () {
+    super.draw();
 
-    // Fill the emptyStateDiv with our warning
-    this.emptyStateDiv.html('<h3>No property selected</h3>');
+    // If we don't have a URL, update the emptyStateDiv to explain why
+    this.emptyStateDiv.html(`<h3>${this.missingMessage}</h3>`);
   }
 }
 

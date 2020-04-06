@@ -1,19 +1,15 @@
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
-import SvgViewMixin from '../common/SvgViewMixin.js';
 
-class AssignmentView extends SvgViewMixin(GoldenLayoutView) {
+class AssignmentView extends GoldenLayoutView {
   constructor (argObj) {
     argObj.resources = [
       { type: 'less', url: './views/AssignmentView/style.less' },
-      { type: 'text', url: './views/AssignmentView/template.svg' }
+      { type: 'text', url: './views/AssignmentView/template.html' }
     ];
     super(argObj);
   }
   get title () {
     return 'Assignments';
-  }
-  get isEmpty () {
-    return true;
   }
   setup () {
     super.setup();

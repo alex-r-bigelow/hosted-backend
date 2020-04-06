@@ -1,11 +1,10 @@
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
-import SvgViewMixin from '../common/SvgViewMixin.js';
 
-class MapView extends SvgViewMixin(GoldenLayoutView) {
+class MapView extends GoldenLayoutView {
   constructor (argObj) {
     argObj.resources = [
       { type: 'less', url: './views/MapView/style.less' },
-      { type: 'text', url: './views/MapView/template.svg' }
+      { type: 'text', url: './views/MapView/template.html' }
     ];
     super(argObj);
   }
@@ -17,7 +16,7 @@ class MapView extends SvgViewMixin(GoldenLayoutView) {
   }
   setup () {
     super.setup();
-    // Apply the template
+    // Apply the template; this.content is the div inside the GoldenLayout pane
     this.content.html(this.resources[1]);
 
     // Fill the emptyStateDiv with our warning

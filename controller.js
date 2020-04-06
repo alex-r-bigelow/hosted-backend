@@ -1,6 +1,12 @@
 /* globals d3, less, GoldenLayout */
 import { Model } from './node_modules/uki/dist/uki.esm.js';
 
+// Models for managing datasets and state
+import People from './models/People.js';
+import Houses from './models/Houses.js';
+import Assignments from './models/Assignments.js';
+import AppState from './models/AppState.js';
+
 // General-purpose views
 import TooltipView from './views/TooltipView/TooltipView.js';
 import ModalView from './views/ModalView/ModalView.js';
@@ -25,6 +31,12 @@ const viewClassLookup = {
 class Controller extends Model {
   constructor () {
     super();
+
+    this.people = new People();
+    this.houses = new Houses();
+    this.assignments = new Assignments();
+    this.appState = new AppState();
+
     this.modal = new ModalView();
     this.tooltip = new TooltipView();
     this.setupLayout();

@@ -19,6 +19,24 @@ class Assignments extends Model {
     }
     return lastAssignments;
   }
+  getAssignmentCounts () {
+    const currentAssignments = {};
+    const assignmentCounts = {};
+    for (const assignment of this.table.slice().reverse()) {
+      const currentAssignment = currentAssignments[assignment['Person Timestamp']];
+      if (currentAssignment) {
+        assignmentCounts[currentAssignment] -= 1;
+      }
+
+      if (assignment['House Timestamp'] !== null) {
+        assignmentCounts[assignment['House Timestamp']] = 1 + (assignmentCounts[assignment['House Timestamp']] || 0);
+        currentAssignments[assignment['Person Timestamp']] = assignment['House Timestamp'];
+      } else {
+        delete currentAssignments[assignment['Person Timestamp']];
+      }
+    }
+    return assignmentCounts;
+  }
   addAssignments (rows) {
     this.resources[0].unshift(...rows);
     this.trigger('assignmentMade');

@@ -16,11 +16,24 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
   get title () {
     return 'People';
   }
+  getHeaders () {
+    const nativeHeaders = Object.keys(window.controller.people.table[0]);
+    return ['Currently Assigned'].concat(nativeHeaders);
+  }
+  getTable () {
+    const lastAssignments = window.controller.assignments.getLastAssignments();
+    return window.controller.people.table.map(person => {
+      const tempPerson = Object.assign({
+        'Currently Assigned': lastAssignments[person.Timestamp] ? 'Yes' : 'No'
+      }, person);
+      return tempPerson;
+    });
+  }
   getTableHeaders () {
-    return window.controller.people.getHeaders();
+    return this.getHeaders();
   }
   getTableRows () {
-    return window.controller.people.getTable();
+    return this.getTable();
   }
   draw () {
     super.draw();

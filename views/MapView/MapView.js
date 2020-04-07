@@ -1,6 +1,6 @@
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
 import { makeMap } from "./leaflet.js"
-import {gMap,initMap} from "./googlemaps.js"
+import { gMap } from "./googlemaps.js"
 
 class MapView extends GoldenLayoutView {
   constructor(argObj) {
@@ -22,14 +22,13 @@ class MapView extends GoldenLayoutView {
   setup() {
     super.setup();
     // div holding the actual map elements
-    //let leafletMap = makeMap()
-    //this.leafletMap = leafletMap
-    //// Apply the template; this.content is the div inside the GoldenLayout pane
-    //this.content.node().append(leafletMap.container)
+    let leafletMap = makeMap()
+    this.leafletMap = leafletMap
+    // Apply the template; this.content is the div inside the GoldenLayout pane
+    this.content.node().append(leafletMap.container)
     this.content.node().id = "mapholder"
     // setup google maps api
-    this.gMap = gMap
-    console.log(this.gMap)
+
 
 
 
@@ -39,7 +38,11 @@ class MapView extends GoldenLayoutView {
   }
   draw() {
     super.draw();
-    //this.leafletMap.mapObj.invalidateSize()
+    this.leafletMap.mapObj.invalidateSize()
+    if (google.maps) {
+      this.gMap = gMap
+      this.gMap.geocoder("2334 e parkway terrace, Tucson, AZ")
+    }
     if (this.isHidden || this.isLoading) {
       return;
     }

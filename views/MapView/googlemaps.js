@@ -1,16 +1,18 @@
 
 var map;
-export var initMap;
 // initiate with correct import
 
 export let gMap = (() => {
     let ob = {}
-    initMap = () => {
-        console.log("initializing map")
-        ob.map = new google.maps.Map(document.getElementById('mapholder'), {
-            center: { lat: -34.397, lng: 150.644 },
-            zoom: 8
-        });
+    ob.geocoder = (address) => {
+        let coder = new google.maps.Geocoder()
+        coder.geocode({address},(res,status)=> {
+            if (status == "OK"){
+                console.log("results",res[0].geometry.location)
+                console.log("results",res[0].geometry.location.lat())
+                console.log("results",res[0].geometry.location.lng())
+            }
+        })
     }
     return ob
 })();
@@ -22,8 +24,7 @@ export let gMap = (() => {
 
         console.log("key is",mapsApiKey,"now importing")
     let script = document.createElement("script")
-    console.log(initMap)
 
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}&callback=initMap`
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}&libraries=places`
     document.body.append(script)
 })()

@@ -21,14 +21,21 @@ class AssignmentHistoryView extends TableViewMixin(GoldenLayoutView) {
   get title () {
     return 'History';
   }
+  get isLoading () {
+    return !window.controller.assignments.loggedInAndLoaded;
+  }
   getTableHeaders () {
-    return ['Case Worker', 'Person Timestamp', 'House Timestamp'];
+    return ['Case worker', 'Person Timestamp', 'House Timestamp'];
   }
   getTableRows () {
     return window.controller.assignments.table;
   }
   draw () {
     super.draw();
+
+    if (this.isHidden || this.isLoading) {
+      return;
+    }
 
     this.rows
       .on('click', row => {

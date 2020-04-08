@@ -1,7 +1,7 @@
 @import '../../style/colors.less';
 @import '../../style/measurements.less';
 
-#modal {
+.ModalMixin {
   position: absolute;
   left: 0px;
   top: 0px;
@@ -10,7 +10,7 @@
   display: flex;
   background-color: fade(@shadowColor, 75%);
   z-index: 1000;
-  .contents {
+  .centerWrapper {
     position: relative;
     background-color: @backgroundColor;
     border: 1px solid @shadowColor;
@@ -22,5 +22,21 @@
     max-height: calc(100% - @modalMargin);
     margin: auto;
     padding: 1em;
+    .contents {
+      margin-bottom: 3.5em;
+      max-height: calc(100vh - 7.5em);
+      overflow: auto;
+    }
+  }
+  .buttonWrapper {
+    position: absolute;
+    bottom: 1em;
+    right: 1em;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    .button {
+      margin-left: 1em;
+    }
   }
 }

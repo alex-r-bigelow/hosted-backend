@@ -1,14 +1,25 @@
-import { Model } from '../node_modules/uki/dist/uki.esm.js';
+import { GoogleSheetModel } from '../node_modules/uki/dist/uki.esm.js';
 
-class Assignments extends Model {
+class Assignments extends GoogleSheetModel {
   constructor () {
     super([
-      { type: 'csv', url: 'models/fakeAssignmentsTable.csv' }
-    ]);
-    // TODO: change this to push / pull / update data from the Google Sheet
+      { type: 'json', url: 'models/google.json', name: 'google' }
+    ], {
+      spreadsheetId: '1l7Xoysx1kVfpRy_Xcsu6AEySp3yk9VOjQtOWYndvE-Y',
+      mode: GoogleSheetModel.MODE.AUTH_READ_WRITE,
+      range: 'Sheet1'
+    });
+    this.ready.then(() => {
+      const { key, client } = this.getNamedResource('google');
+      this.setupAuth(key, client);
+    });
+  }
+  get loggedInAndLoaded () {
+    return this.status === GoogleSheetModel.STATUS.SIGNED_IN &&
+      !!this.getValues();
   }
   get table () {
-    return this.resources[0];
+    return this.getValues() || [];
   }
   getLastAssignments () {
     const lastAssignments = {};
@@ -38,8 +49,7 @@ class Assignments extends Model {
     return assignmentCounts;
   }
   addAssignments (rows) {
-    this.resources[0].unshift(...rows);
-    this.trigger('assignmentMade');
+    this.addRows(rows);
   }
 }
 

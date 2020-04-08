@@ -15,6 +15,9 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
   get title () {
     return 'Properties';
   }
+  get isLoading () {
+    return !window.controller.houses.loggedInAndLoaded;
+  }
   getTableHeaders () {
     const nativeHeaders = Object.keys(window.controller.houses.table[0]);
     return ['People Assigned'].concat(nativeHeaders);
@@ -29,6 +32,10 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
   }
   draw () {
     super.draw();
+
+    if (this.isHidden || this.isLoading) {
+      return;
+    }
 
     this.rows
       .classed('selected', row => {

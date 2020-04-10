@@ -14,9 +14,6 @@ class AssignmentView extends GoldenLayoutView {
     window.controller.appState.on('peopleSelection', () => {
       this.render();
     });
-    window.controller.appState.on('assignmentMade', () => {
-      this.render();
-    });
   }
   get title () {
     return 'Assignments';
@@ -52,6 +49,7 @@ class AssignmentView extends GoldenLayoutView {
         if (!potential.reassign && potential.house && potential.people.length > 0) {
           window.controller.assignments.addAssignments(potential.people.map(pTime => {
             return {
+              'Timestamp': new Date().toLocaleString('en-GB'),
               'Case Worker': potential.caseWorker,
               'House Timestamp': potential.house,
               'Person Timestamp': pTime
@@ -68,6 +66,7 @@ class AssignmentView extends GoldenLayoutView {
         if (potential.reassign && potential.house && potential.people.length > 0) {
           window.controller.assignments.addAssignments(potential.people.map(pTime => {
             return {
+              'Timestamp': new Date().toLocaleString('en-GB'),
               'Case Worker': potential.caseWorker,
               'House Timestamp': potential.house,
               'Person Timestamp': pTime
@@ -84,6 +83,7 @@ class AssignmentView extends GoldenLayoutView {
         if (potential.reassign && potential.people.length > 0) {
           window.controller.assignments.addAssignments(potential.people.map(pTime => {
             return {
+              'Timestamp': new Date().toLocaleString('en-GB'),
               'Case Worker': potential.caseWorker,
               'House Timestamp': null,
               'Person Timestamp': pTime

@@ -8,7 +8,7 @@ class People extends Model {
     // TODO: change this to an uploaded CSV, and later to integrated
     // SurveyMonkey responses
   }
-  get table () {
+  getValues () {
     return this.resources[0];
   }
 }

@@ -1,14 +1,21 @@
-.AuthModalView {
-  max-width: 30em;
+@import '../../style/colors.less';
 
-  .google.button {
-    margin: 1em auto;
+.AuthModalView {
+  max-width: 40em;
+
+  .spread {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
   }
 
-  .spinner {
-    text-align: center;
-    img {
-      width: 2em;
-    }
+  .statusIcon {
+    margin-left: 2em;
+    width: 2em;
+    height: 2em;
+  }
+
+  .errorMessage {
+    color: @errorColor;
   }
 }

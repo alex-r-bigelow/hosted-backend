@@ -6,8 +6,8 @@ class Houses extends GoogleSheetModel {
       { type: 'json', url: 'models/google.json', name: 'google' }
     ], {
       spreadsheetId: '1Gq8sK5UVguy4OV0HpezDoNtRWOwRMFH5bOAVi66Cb-8',
-      mode: GoogleSheetModel.MODE.AUTH_READ_ONLY,
-      range: 'Form Responses 1'
+      mode: GoogleSheetModel.MODE.AUTH_READ_WRITE,
+      sheet: 'Form Responses 1'
     });
     this.ready.then(() => {
       const { key, client } = this.getNamedResource('google');
@@ -18,11 +18,8 @@ class Houses extends GoogleSheetModel {
     return this.status === GoogleSheetModel.STATUS.SIGNED_IN &&
       !!this.getValues();
   }
-  get table () {
-    return this.getValues() || [];
-  }
   get selectedHouse () {
-    return this.table.find(d => d[0] === window.controller.appState.selectedHouseTimestamp);
+    return this.getValues().find(d => d.Timestamp === window.controller.appState.selectedHouseTimestamp);
   }
 }
 

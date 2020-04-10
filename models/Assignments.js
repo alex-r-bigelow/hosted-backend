@@ -7,7 +7,7 @@ class Assignments extends GoogleSheetModel {
     ], {
       spreadsheetId: '1l7Xoysx1kVfpRy_Xcsu6AEySp3yk9VOjQtOWYndvE-Y',
       mode: GoogleSheetModel.MODE.AUTH_READ_WRITE,
-      range: 'Sheet1'
+      sheet: 'Sheet1'
     });
     this.ready.then(() => {
       const { key, client } = this.getNamedResource('google');
@@ -18,12 +18,9 @@ class Assignments extends GoogleSheetModel {
     return this.status === GoogleSheetModel.STATUS.SIGNED_IN &&
       !!this.getValues();
   }
-  get table () {
-    return this.getValues() || [];
-  }
   getLastAssignments () {
     const lastAssignments = {};
-    for (const assignment of this.table) {
+    for (const assignment of this.getValues()) {
       if (lastAssignments[assignment['Person Timestamp']] === undefined) {
         lastAssignments[assignment['Person Timestamp']] = assignment['House Timestamp'];
       }
@@ -33,7 +30,7 @@ class Assignments extends GoogleSheetModel {
   getAssignmentCounts () {
     const currentAssignments = {};
     const assignmentCounts = {};
-    for (const assignment of this.table.slice().reverse()) {
+    for (const assignment of this.getValues().slice().reverse()) {
       const currentAssignment = currentAssignments[assignment['Person Timestamp']];
       if (currentAssignment) {
         assignmentCounts[currentAssignment] -= 1;

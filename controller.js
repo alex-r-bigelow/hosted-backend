@@ -116,7 +116,9 @@ class Controller extends Model {
     }
   }
   renderAllViews () {
-    this.modal.render();
+    if (this.modal) {
+      this.modal.render();
+    }
     this.tooltip.render();
     for (const view of Object.values(this.views)) {
       view.render();

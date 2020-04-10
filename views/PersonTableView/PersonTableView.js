@@ -9,6 +9,9 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
     ];
     super(argObj);
 
+    window.controller.people.on('dataUpdated', () => {
+      this.render();
+    });
     window.controller.appState.on('peopleSelection', () => {
       this.render();
     });
@@ -20,7 +23,7 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
     return 'People';
   }
   getHeaders () {
-    const nativeHeaders = Object.keys(window.controller.people.getValues()[0]);
+    const nativeHeaders = window.controller.people.getHeaders();
     return ['Currently Assigned'].concat(nativeHeaders);
   }
   getTable () {

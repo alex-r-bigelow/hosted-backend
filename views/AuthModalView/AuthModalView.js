@@ -69,6 +69,20 @@ class AuthModalView extends ModalMixin(View) {
         this.render();
       }
     });
+
+    this.contents.select('.upload.button').on('click', () => {
+      this.contents.select('.hiddenUpload').node().click();
+    });
+
+    this.contents.select('.hiddenUpload').on('change', function () {
+      if (this.files.length > 0) {
+        const reader = new window.FileReader();
+        reader.onload = evt => {
+          window.controller.people.updateTable(evt.target.result);
+        };
+        reader.readAsText(this.files[0]);
+      }
+    });
   }
   draw () {
     super.draw();

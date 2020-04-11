@@ -11,6 +11,10 @@ class MapView extends GoldenLayoutView {
     ];
     super(argObj);
 
+    this.houseMarkers = {};
+    this.hospitalCircle = null;
+
+    window.controller.appState.on('hospitalSelection', () => { this.render(); });
     window.controller.houses.on('dataUpdated', () => { this.render(); });
   }
   get title () {
@@ -52,14 +56,7 @@ class MapView extends GoldenLayoutView {
     }).bindPopup(l => {
       return l.feature.properties.name;
     }).on('click', (e) => {
-      console.log('clicked hospital', e);
-      // circle
-      L.circle(e.latlng, {
-        color: 'red',
-        fillColor: '#f03',
-        fillOpacity: 0.5,
-        radius: 500
-      }).addTo(map);
+      window.controller.appState.selectHospital(e);
     }).addTo(map);
 
     return map;
@@ -71,23 +68,63 @@ class MapView extends GoldenLayoutView {
     }
     this.leafletMap.invalidateSize();
 
-    // Update the house markers
+    this.updateHouseMarkers();
+    this.updateHospitalCircle();
+  }
+  updateHouseMarkers () {
     const houseIcon = L.icon({
       iconSize: [20, 20],
       iconUrl: './views/MapView/house_icon.svg'
     });
-    window.controller.houses.getValues().map(house => {
+    const seenHouseMarkers = {};
+    // TODO: .getValues() will probably change to something else when we start
+    // adding filters
+    window.controller.houses.getValues().forEach(house => {
       // has lat lng
       if (house.lat !== 'fail') {
-        L.marker([house.lat, house.lng], {
-          icon: houseIcon
-        }).addTo(this.leafletMap)
-          .bindPopup(`<p>House Located: ${house['Property Address ']}</p>
-                      <p>Contact: ${house['Primary Contact Name']},
-                        ${house['Primary Contact Email Address']},
-                        ${house['Primary Contact Phone Number']}`);
+        const markerKey = house.lat + ',' + house.lng;
+        if (this.houseMarkers[markerKey]) {
+          // This house already exists, just mark that we saw it and that it
+          // (TODO: if we're just greying out houses instead of removing them,
+          // we should restore the non-grey icon here
+          seenHouseMarkers[markerKey] = true;
+        } else {
+          // This is a new house marker; create it
+          seenHouseMarkers[markerKey] = true;
+          this.houseMarkers[markerKey] = L.marker([house.lat, house.lng], {
+            icon: houseIcon
+          }).addTo(this.leafletMap)
+            .bindPopup(`<p>House Located: ${house['Property Address ']}</p>
+                        <p>Contact: ${house['Primary Contact Name']},
+                          ${house['Primary Contact Email Address']},
+                          ${house['Primary Contact Phone Number']}`);
+        }
       }
     });
+    // TODO: Remove / grey out any markers that don't pass the current house
+    // filters; these will be in this.houseMarkers but not in seenHouseMarkers
+  }
+  updateHospitalCircle () {
+    const selectedHospital = window.controller.appState.selectedHospital;
+    if (selectedHospital) {
+      if (this.hospitalCircle) {
+        // Remove the old circle
+        this.hospitalCircle.remove();
+      }
+      // Add (or move) the circle to the clicked hospital
+      this.hospitalCircle = L.circle(selectedHospital.latlng, {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        radius: 2414.016
+      }).addTo(this.leafletMap);
+    } else {
+      if (this.hospitalCircle) {
+        // There's no longer a hospital selection; remove the circle
+        this.hospitalCircle.remove();
+        this.hospitalCircle = null;
+      }
+    }
   }
 }
 

@@ -20,7 +20,7 @@ class MapView extends GoldenLayoutView {
   setup () {
     super.setup();
     // div holding the actual map elements
-    let leafletMap = makeMap()
+    let leafletMap = makeMap(window.controller.houses.table)
     this.leafletMap = leafletMap
     // Apply the template; this.content is the div inside the GoldenLayout pane
     this.content.node().append(leafletMap.container)

@@ -1,3 +1,25 @@
-Timestamp,Property Name,Property Address,Name of closest hospital (if known),Number of rooms available,Number of kitchens  / kitchenettes available,Is food and beverage service available? ,Are there laundry facilities available for healthcare worker use?,What is the earliest date are you willing to have your property available?,How long are you willing to donate your property to frontline healthcare staff fighting COVID19?,Primary Contact Name,Primary Contact Email Address,Primary Contact Phone Number,Secondary Contact Name,Secondary Contact Email Address,Secondary Contact Phone Number,Additional Information for the HCW HOSTED Team,url
-4/5/2020 13:17:11,(test),901 N 2nd Ave,Banner,99,2,No,Yes,12/8/2020,2 months,Alex,test@test.com,555-555-5555,,,,,https://www.airbnb.com/rooms/37597639
-4/5/2020 13:17:12,(test),901 N 2nd Ave,Banner,99,2,No,Yes,12/8/2020,2 months,Alex,test@test.com,555-555-5555,,,,,https://www.airbnb.com/rooms/17664167
+Timestamp,Property Name,Property Address,Name of closest hospital (if known),Number of rooms available,Number of kitchens  / kitchenettes available,Is food and beverage service available? ,Are there laundry facilities available for healthcare worker use?,What is the earliest date are you willing to have your property available?,How long are you willing to donate your property to frontline healthcare staff fighting COVID19?,Primary Contact Name,Primary Contact Email Address,Primary Contact Phone Number,Secondary Contact Name,Secondary Contact Email Address,Secondary Contact Phone Number,Additional Information for the HCW HOSTED Team,"Link to property (e.g. AirBnB listing, hotel website, etc)",lat,lng
+4/5/2020 13:11:37,the place ,downtown,,4,1,No,No,,,devin,devin@testing,520000000,,,,,,fail,fail
+4/5/2020 13:17:24,(test),(test address),Banner,99,2,No,Yes,12/8/2020,2 months,Alex,test@test.com,555-555-5555,,,,,,fail,fail
+4/5/2020 16:16:18,Rustic Modern Home on Waverly,2709 E Waverly Street Tucson AZ 85716,University Medical Center,"3 (6 beds total, can sleep up to 10, or 6 solo sleepers)",1,You can order in from local restaurants,Yes,4/8/2020,2 months,Allison Keeme,allison@allisonkeeme.com,5202459088,Jeff Keeme,jeff@keeme.net,5203341007,,,32.24594,-110.93207
+4/5/2020 16:18:26,Rustic Home Near UofA,2933 E Sylvia Street Tucson AZ 85716,University Medical Center,3 (6 beds; sleeps up to 10 or 6 solo sleepers),1,Can order from local restaurants,Yes,4/8/2020,2 months,Allison Keeme,allison@allisonkeeme.com,5202459088,Jeff Keeme,jeff@keeme.net,5203341007,,,32.255554,-110.92914
+4/7/2020 23:04:41,Test,test,,2 test,2 test,No,No,4/10/2020,2 months,test,test,test,,,,,,fail,fail
+4/8/2020 0:37:01,Our upstairs AirBnB apartment,"1400 E Lester St Tucson, AZ 85719 ",Banner University Medical Center,1,1,We're glad to do whatever our guest might require in these areas.  You've enough to worry about.,Yes,4/8/2020,As long as it takes to battle COVID19,John McNiece,Johnmcniece@cox.net,520-481-8747,Adelle McNiece,Adelle_kristine@yahoo.com,520-481-8747,"Our apartment is currently occupied as of today and until May 7th (longer of course if needed) by Dr Brad Dreifuss who has just started (if I understand correctly) a month long nighttime rotation at Banner/UMC hospital which is right next to us.  He said that we should sign up here as well.  Our apartment is completely separate from the rest of the dwelling by the way. Here is its AirBnB listing. We're in the top 10 in the city to humblebrag btw.  https://airbnb.com/h/amazing-view-in-central-tucson
+
+We are 2 blocks from the new main hospital entrance btw.  Our space is amazingly relaxing and we're glad to share it with the needy for free.  We would appreciate help decontaminating if necessary or a small fee to clean it.
+
+Btw my wife and I are both in the sciences and really get microbiology, cleaning standards, spacing, most of the ball of wax.  We've also got the cleaning supplies to work with for at least a couple of months.
+Thank you so much for what you are doing.",,32.24369,-110.95114
+4/9/2020 7:33:05,Courtyard Williams Centre ,"201 S Williams Blvd Tucson, AZ 85711 ",,153,0,Hotel is in walking distance to numerous restaurant which are offering dine out service ,Yes,4/10/2020,2 months,Janet McClanahan,tucsoncydos@ih-corp.com,520-745-6000,,,,,,32.21683,-110.87718
+4/9/2020 17:39:53,testing automatic change detection,x,,x,x,Yes,Yes,,, b,b,b,,,,,,fail,fail
+4/9/2020 20:35:59,est,t,,t,t,Yes,Yes,,,t,t,t,,,,,,fail,fail
+4/9/2020 20:39:00,est,t,,t,t,Yes,Yes,,,t,t,t,,,,,,fail,fail
+4/9/2020 20:40:08,est,t,,t,t,Yes,Yes,,,t,t,t,,,,,,fail,fail
+4/9/2020 20:41:58,est,t,,t,t,Yes,Yes,,,t,t,t,,,,,,fail,fail
+4/9/2020 20:42:39,est,t,,t,t,Yes,Yes,,,t,t,t,,,,,,fail,fail
+4/9/2020 20:43:03,est,t,,t,t,Yes,Yes,,,t,t,t,,,,,,fail,fail
+4/9/2020 20:47:00,est,t,,t,t,Yes,Yes,,,t,t,t,,,,,,fail,fail
+4/10/2020 7:55:36,test,test,UA,1,1,Yes,Yes,4/20/2020,3 months,test,test,test,,,,,https://www.airbnb.com/rooms/18747689?location=Tucson%2C%20AZ%2C%20United%20States&source_impression_id=p3_1586530519_DdBETrehlzolxSdL,fail,fail
+4/10/2020 14:10:12,Residence Inn Williams Center ,5400 E Williams Circle Tucson AZ 85711,,120,120,No,Yes,4/10/2020,1 month,Janet McClanahan,tucsoncydos@ih-corp.com,520-745-6000,,,,,,32.220493,-110.87772
+4/10/2020 17:15:33,test,test,,test,test,Yes,Yes,,,test,test,test,,,,,,fail,fail
+4/10/2020 17:16:41,test,test,,test,test,Yes,Yes,,,test,test,test,,,,,,fail,fail

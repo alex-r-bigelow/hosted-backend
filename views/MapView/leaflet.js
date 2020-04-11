@@ -1,15 +1,15 @@
 console.log("loaded")
 
-export let makeMap = () => {
+export let makeMap = (housedata) => {
 
-
+    console.log("house daat is", housedata)
     let mapContainer = document.createElement("div")
     mapContainer.id = "mapcontainer"
-    
+
 
 
     // make the map
-    
+
     let map = L.map(mapContainer, {
         center: [32.253460, -110.911789], // latitude, longitude in decimal degrees (find it on Google Maps with a right click!)
         zoom: 12, // can be 0-22, higher is closer
@@ -44,8 +44,32 @@ export let makeMap = () => {
                 pointToLayer: markerSetFunc
             }).bindPopup(l => {
                 return l.feature.properties.name
+                
+            }).on("click", (e) => {
+                console.log("clicked hospital", e)
+                //circle
+                L.circle(e.latlng, {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.5,
+                    radius: 500
+                }).addTo(map);
             }).addTo(map)
 
         })
-    return {container:mapContainer,mapObj:map}
+    // add markers for the houses
+    let houseIcon = L.icon({
+        iconSize: [20, 20],
+        iconUrl: "./views/MapView/house_icon.svg"
+    })
+    housedata.map(house => {
+        //has lat lng
+        if (house.lat != "fail") {
+            let marker = L.marker([house.lat, house.lng], {
+                icon: houseIcon
+            }).addTo(map).bindPopup(`<p>House Located: ${house["Property Address"]}</p>
+        <p>Contact: ${house["Primary Contact Name"]},${house["Primary Contact Email Address"]},${house["Primary Contact Phone Number"]}`)
+        }
+    })
+    return { container: mapContainer, mapObj: map }
 }

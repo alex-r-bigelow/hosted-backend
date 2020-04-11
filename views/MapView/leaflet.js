@@ -34,6 +34,7 @@ export let makeMap = (housedata) => {
             icon: newIcon
         })
     }
+    let circleCollection = {}
     fetch("./views/MapView/Hospitals.geojson")
         .then(res => res.json())
         .then(geojson => {
@@ -44,16 +45,24 @@ export let makeMap = (housedata) => {
                 pointToLayer: markerSetFunc
             }).bindPopup(l => {
                 return l.feature.properties.name
-                
+
             }).on("click", (e) => {
                 console.log("clicked hospital", e)
                 //circle
-                L.circle(e.latlng, {
-                    color: 'red',
-                    fillColor: '#f03',
-                    fillOpacity: 0.5,
-                    radius: 500
-                }).addTo(map);
+                if (circleCollection[e.latlng] != undefined) {
+                    circleCollection[e.latlng].remove()
+                    delete circleCollection[e.latlng]
+                } else {
+                    // 3mi diameter
+                    let circle = L.circle(e.latlng, {
+                        color: 'red',
+                        fillColor: '#f03',
+                        fillOpacity: 0.5,
+                        radius:2414.016
+                    })
+                    circleCollection[e.latlng] = circle
+                    circle.addTo(map);
+                }
             }).addTo(map)
 
         })

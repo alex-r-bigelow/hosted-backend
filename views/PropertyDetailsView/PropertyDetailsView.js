@@ -9,12 +9,13 @@ class PropertyDetailsView extends IFrameViewMixin(GoldenLayoutView) {
 
     window.controller.appState.on('houseSelection', () => {
       const house = window.controller.houses.selectedHouse;
-      if (house && house.url) {
-        this.src = house.url;
+      if (house && house['Link to property (e.g. AirBnB listing, hotel website, etc)']) {
+        // Show the official link
+        this.src = house['Link to property (e.g. AirBnB listing, hotel website, etc)'];
         this.missingMessage = '';
       } else if (house) {
         this.src = null;
-        this.missingMessage = 'Selected property has no URL';
+        this.missingMessage = 'Selected property provided no link';
       } else {
         this.src = null;
         this.missingMessage = 'No property selected';

@@ -31,9 +31,10 @@ class AppState extends Model {
     this.selectedHouseTimestamp = timestamp;
     this.trigger('houseSelection');
   }
-  selectHospital (id) {
-    this.selectedHospital = id;
+  selectHospital (hospital) {
+    this.selectedHospital = hospital;
     // TODO: add a personFilter AND a housingFilter
+    this.trigger('hospitalSelection');
   }
   clearSelections () {
     this.selectedHouseTimestamp = null;

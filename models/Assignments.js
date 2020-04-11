@@ -1,18 +1,26 @@
-import { Model } from '../node_modules/uki/dist/uki.esm.js';
+import { GoogleSheetModel } from '../node_modules/uki/dist/uki.esm.js';
 
-class Assignments extends Model {
+class Assignments extends GoogleSheetModel {
   constructor () {
     super([
-      { type: 'csv', url: 'models/fakeAssignmentsTable.csv' }
-    ]);
-    // TODO: change this to push / pull / update data from the Google Sheet
+      { type: 'json', url: 'models/google.json', name: 'google' }
+    ], {
+      spreadsheetId: '1l7Xoysx1kVfpRy_Xcsu6AEySp3yk9VOjQtOWYndvE-Y',
+      mode: GoogleSheetModel.MODE.AUTH_READ_WRITE,
+      sheet: 'Sheet1'
+    });
+    this.ready.then(() => {
+      const { key, client } = this.getNamedResource('google');
+      this.setupAuth(key, client);
+    });
   }
-  get table () {
-    return this.resources[0];
+  get loggedInAndLoaded () {
+    return this.status === GoogleSheetModel.STATUS.SIGNED_IN &&
+      !!this.getValues();
   }
   getLastAssignments () {
     const lastAssignments = {};
-    for (const assignment of this.table) {
+    for (const assignment of this.getValues()) {
       if (lastAssignments[assignment['Person Timestamp']] === undefined) {
         lastAssignments[assignment['Person Timestamp']] = assignment['House Timestamp'];
       }
@@ -22,7 +30,7 @@ class Assignments extends Model {
   getAssignmentCounts () {
     const currentAssignments = {};
     const assignmentCounts = {};
-    for (const assignment of this.table.slice().reverse()) {
+    for (const assignment of this.getValues().slice().reverse()) {
       const currentAssignment = currentAssignments[assignment['Person Timestamp']];
       if (currentAssignment) {
         assignmentCounts[currentAssignment] -= 1;
@@ -38,8 +46,7 @@ class Assignments extends Model {
     return assignmentCounts;
   }
   addAssignments (rows) {
-    this.resources[0].unshift(...rows);
-    this.trigger('assignmentMade');
+    this.addRows(rows);
   }
 }
 

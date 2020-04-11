@@ -9,7 +9,13 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
     ];
     super(argObj);
 
+    window.controller.people.on('dataUpdated', () => {
+      this.render();
+    });
     window.controller.appState.on('peopleSelection', () => {
+      this.render();
+    });
+    window.controller.assignments.on('dataUpdated', () => {
       this.render();
     });
   }
@@ -17,12 +23,12 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
     return 'People';
   }
   getHeaders () {
-    const nativeHeaders = Object.keys(window.controller.people.table[0]);
+    const nativeHeaders = window.controller.people.getHeaders();
     return ['Currently Assigned'].concat(nativeHeaders);
   }
   getTable () {
     const lastAssignments = window.controller.assignments.getLastAssignments();
-    return window.controller.people.table.map(person => {
+    return window.controller.people.getValues().map(person => {
       const tempPerson = Object.assign({
         'Currently Assigned': lastAssignments[person.Timestamp] ? 'Yes' : 'No'
       }, person);

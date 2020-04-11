@@ -11,17 +11,23 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
     window.controller.appState.on('houseSelection', () => {
       this.render();
     });
+    window.controller.assignments.on('dataUpdated', () => {
+      this.render();
+    });
   }
   get title () {
     return 'Properties';
   }
+  get isLoading () {
+    return !window.controller.houses.loggedInAndLoaded;
+  }
   getTableHeaders () {
-    const nativeHeaders = Object.keys(window.controller.houses.table[0]);
+    const nativeHeaders = window.controller.houses.getHeaders();
     return ['People Assigned'].concat(nativeHeaders);
   }
   getTableRows () {
     const counts = window.controller.assignments.getAssignmentCounts();
-    return window.controller.houses.table.map(row => {
+    return window.controller.houses.getValues().map(row => {
       return Object.assign({
         'People Assigned': counts[row.Timestamp] || 0
       }, row);
@@ -29,6 +35,10 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
   }
   draw () {
     super.draw();
+
+    if (this.isHidden || this.isLoading) {
+      return;
+    }
 
     this.rows
       .classed('selected', row => {

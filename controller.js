@@ -9,7 +9,7 @@ import AppState from './models/AppState.js';
 
 // General-purpose views
 import TooltipView from './views/TooltipView/TooltipView.js';
-import ModalView from './views/ModalView/ModalView.js';
+import AuthModalView from './views/AuthModalView/AuthModalView.js';
 
 // Main views in the app
 import PersonTableView from './views/PersonTableView/PersonTableView.js';
@@ -39,7 +39,6 @@ class Controller extends Model {
     this.assignments = new Assignments();
     this.appState = new AppState();
 
-    this.modal = new ModalView();
     this.tooltip = new TooltipView();
     this.setupLayout();
     window.onresize = () => {
@@ -117,12 +116,25 @@ class Controller extends Model {
     }
   }
   renderAllViews () {
-    this.modal.render();
+    if (this.modal) {
+      this.modal.render();
+    }
     this.tooltip.render();
     for (const view of Object.values(this.views)) {
       view.render();
     }
   }
+  showModal (ModalViewClass) {
+    const modalElement = d3.select('#modal').style('display', null);
+    this.modal = new ModalViewClass(modalElement);
+  }
+  hideModal () {
+    this.modal = null;
+    d3.select('#modal')
+      .style('display', 'none')
+      .html('');
+  }
 }
 
 window.controller = new Controller();
+window.controller.showModal(AuthModalView);

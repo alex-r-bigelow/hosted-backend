@@ -54,7 +54,7 @@ class MapView extends GoldenLayoutView {
     L.geoJSON(this.getNamedResource('hospitals'), {
       pointToLayer: markerSetFunc
     }).bindPopup(l => {
-      return l.feature.properties.name;
+      return l.feature.properties.name + l.feature.properties.nearbyHouses!= undefined? l.feature.properties.nearbyHouses: "No nearby houses";
     }).on('click', (e) => {
       window.controller.appState.selectHospital(e);
     }).addTo(map);
@@ -103,6 +103,48 @@ class MapView extends GoldenLayoutView {
     });
     // TODO: Remove / grey out any markers that don't pass the current house
     // filters; these will be in this.houseMarkers but not in seenHouseMarkers
+    
+
+    // TODO: establish a collection of only the gps'd houses for comparisons and assignments
+    // for each hospitalhouse as key, simply mark true, and break out of the looping if so 
+    this.hospitalHousePairs ={}
+    // factor   .001 of lat or lng is 111.32m
+    let convFactor = 111.32/.001
+    let min= 100000
+    let max = -5
+    // make async somehow?
+    for (let hospital of this.getNamedResource('hospitals').features) {
+      hospital.nearbyHouses = ""
+      for (let house of window.controller.houses.getValues()) {
+        if (house.lat != "fail" && this.hospitalHousePairs[house["Timestamp"]+hospital.properties.name] != true) {
+          // perform calculation
+          //console.log("hospital is ",hospital.geometry.coordinates,"house",house.lat,house.lng)
+          let deltaLng = Math.abs(hospital.geometry.coordinates[0] - house.lng)
+          let deltaLat = Math.abs(hospital.geometry.coordinates[1] - house.lat)
+          //console.log("dif is lat:",deltaLat,"lng:",deltaLng)
+          let deltaXMeters = deltaLng*convFactor 
+          let deltaYMeters = deltaLat*convFactor 
+          // do dist calculation
+          let dist =  Math.sqrt(Math.pow(deltaXMeters,2) + Math.pow(deltaYMeters,2))
+          if (dist > max) {
+            max = dist
+          } else if (dist < min) {
+            min = dist
+          }
+          //console.log("dist",dist)
+          this.hospitalHousePairs[house["Timestamp"]+hospital.properties.name] =dist
+          // value is less than 1.5 miles
+          if (dist < 2414.016) {
+            hospital.properties.nearbyHouses += `--${house["Timestamp"]}--`
+          }
+        }
+      }
+    }
+
+    console.log("matches", min,max)
+    
+
+    // calculate collection of nearest houses for each hospital, or ones that fall in the radius mark
   }
   updateHospitalCircle () {
     const selectedHospital = window.controller.appState.selectedHospital;

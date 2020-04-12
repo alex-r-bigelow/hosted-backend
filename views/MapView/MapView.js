@@ -60,7 +60,7 @@ class MapView extends GoldenLayoutView {
     L.geoJSON(this.getNamedResource('hospitals'), {
       pointToLayer: markerSetFunc
     }).bindPopup(l => {
-      if (l.feature.properties.nearbyHouses != undefined) {
+      if (l.feature.properties.nearbyHouses != "\n") {
         return l.feature.properties.name + l.feature.properties.nearbyHouses
       } else {
         return l.feature.properties.name + "No nearby houses"
@@ -132,15 +132,9 @@ class MapView extends GoldenLayoutView {
           let dist = Math.sqrt(Math.pow(deltaXMeters, 2) + Math.pow(deltaYMeters, 2))
           //console.log("dist",dist)
           this.hospitalHousePairs[house["Timestamp"] + hospital.properties.name] = dist
-          if (house["Timestamp"].match(/26/) && hospital.properties.name.match(/UNIVERSITY OF ARIZONA MEDICAL CENTER- UNIVERSITY CAMPUS, THE/)) {
-            console.log("stopping")
-            console.log("house", house["Timestamp"])
-            console.log(hospital.geometry.coordinates,[house.lng,house.lat])
-            console.log("distance",dist)
-          }
           // value is less than 1.5 miles
           if (dist < 2700 && house["Timestamp"] != undefined) {
-            hospital.properties.nearbyHouses += `--${house["Timestamp"]}--`
+            hospital.properties.nearbyHouses += `<p>House ID:${house["Timestamp"]}</p>`
           }
         }
       }

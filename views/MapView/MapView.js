@@ -97,7 +97,18 @@ class MapView extends GoldenLayoutView {
             .bindPopup(`<p>House Located: ${house['Property Address ']}</p>
                         <p>Contact: ${house['Primary Contact Name']},
                           ${house['Primary Contact Email Address']},
-                          ${house['Primary Contact Phone Number']}`);
+                          ${house['Primary Contact Phone Number']}`)
+            .on("click",(e)=> {
+              // TODO: ask alex if we want a non relooping way to get this data
+              let timestamp
+              for (let other_house of window.controller.houses.getValues()) {
+                if (house.lat == other_house.lat && house.lng == other_house.lng) {
+                  timestamp = other_house["Timestamp"]
+                  break
+                }
+              }
+              window.controller.appState.selectHouse(timestamp)
+            });
         }
       }
     });

@@ -4,10 +4,10 @@ class AppState extends Model {
   constructor () {
     super();
 
-    this.personFilters = [];
+    this.personFilters = {};
     this.selectedPeopleTimestamps = [];
 
-    this.housingFilters = [];
+    this.housingFilters = {};
     this.selectedHouseTimestamp = null;
 
     this.selectedHospital = null;
@@ -34,6 +34,25 @@ class AppState extends Model {
   selectHospital (hospital) {
     this.selectedHospital = hospital;
     // TODO: add a personFilter AND a housingFilter
+    this.addHouseFilter({
+      key: 'hospital',
+      filterFunc: house => {
+        return
+      }
+    });
+    // TODO: once we know the name of the column where people report
+    // the hospital that they're associated with... (also doing something
+    // to make sure the strings will match)
+    /*
+    this.addPersonFilter({
+      key: 'hospital',
+      filterFunc: person => {
+        return person['Name/location of your primary work site'] ===
+          hospital.feature.properties.name;
+      }
+    });
+    */
+
     this.trigger('hospitalSelection');
   }
   clearSelections () {

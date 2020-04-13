@@ -2,7 +2,7 @@
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
 
 class MapView extends GoldenLayoutView {
-  constructor (argObj) {
+  constructor(argObj) {
     argObj.resources = [
       { type: 'css', url: 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.css' },
       { type: 'js', url: 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.js' },
@@ -17,18 +17,20 @@ class MapView extends GoldenLayoutView {
     window.controller.appState.on('hospitalSelection', () => { this.render(); });
     window.controller.houses.on('dataUpdated', () => { this.render(); });
   }
-  get title () {
+  get title() {
     return 'Map';
   }
-  setup () {
+  setup() {
     super.setup();
     // div holding the actual map elements
     const mapContainer = this.content.append('div')
       .attr('id', 'mapcontainer').node();
 
+    // for each hospitalhouse as key, simply mark true, and break out of the looping if so 
+    this.hospitalHousePairs = {}
     this.leafletMap = this.makeMap(mapContainer);
   }
-  makeMap (mapContainer) {
+  makeMap(mapContainer) {
     const map = L.map(mapContainer, {
       center: [32.253460, -110.911789], // latitude, longitude in decimal degrees (find it on Google Maps with a right click!)
       zoom: 12, // can be 0-22, higher is closer
@@ -51,17 +53,25 @@ class MapView extends GoldenLayoutView {
         icon: newIcon
       });
     };
+    // establish nearbyhouses property
+    this.getNamedResource("hospitals").features.forEach(e=> {
+      e.properties.nearbyHouses = "\n"
+    })
     L.geoJSON(this.getNamedResource('hospitals'), {
       pointToLayer: markerSetFunc
     }).bindPopup(l => {
-      return l.feature.properties.name;
+      if (l.feature.properties.nearbyHouses != "\n") {
+        return l.feature.properties.name + l.feature.properties.nearbyHouses
+      } else {
+        return l.feature.properties.name + "No nearby houses"
+      }
     }).on('click', (e) => {
       window.controller.appState.selectHospital(e);
     }).addTo(map);
 
     return map;
   }
-  draw () {
+  draw() {
     super.draw();
     if (this.isHidden || this.isLoading) {
       return;
@@ -71,7 +81,7 @@ class MapView extends GoldenLayoutView {
     this.updateHouseMarkers();
     this.updateHospitalCircle();
   }
-  updateHouseMarkers () {
+  updateHouseMarkers() {
     const houseIcon = L.icon({
       iconSize: [20, 20],
       iconUrl: './views/MapView/house_icon.svg'
@@ -103,8 +113,38 @@ class MapView extends GoldenLayoutView {
     });
     // TODO: Remove / grey out any markers that don't pass the current house
     // filters; these will be in this.houseMarkers but not in seenHouseMarkers
+
+
+    // factor   .001 of lat or lng is 111.32m
+    let convFactor = 111.32 / .001
+    // make async somehow?
+    for (let hospital of this.getNamedResource('hospitals').features) {
+      for (let house of window.controller.houses.getValues()) {
+        if (house.lat != "fail" && this.hospitalHousePairs[house["Timestamp"] + hospital.properties.name] == undefined) {
+          // perform calculation
+          //console.log("hospital is ",hospital.geometry.coordinates,"house",house.lat,house.lng)
+          let deltaLng = Math.abs(hospital.geometry.coordinates[0] - house.lng)
+          let deltaLat = Math.abs(hospital.geometry.coordinates[1] - house.lat)
+          //console.log("dif is lat:",deltaLat,"lng:",deltaLng)
+          let deltaXMeters = deltaLng * convFactor
+          let deltaYMeters = deltaLat * convFactor
+          // do dist calculation
+          let dist = Math.sqrt(Math.pow(deltaXMeters, 2) + Math.pow(deltaYMeters, 2))
+          //console.log("dist",dist)
+          this.hospitalHousePairs[house["Timestamp"] + hospital.properties.name] = dist
+          // value is less than 1.5 miles
+          if (dist < 2700 && house["Timestamp"] != undefined) {
+            hospital.properties.nearbyHouses += `<p>House ID:${house["Timestamp"]}</p>`
+          }
+        }
+      }
+    }
+
+
+
+    // calculate collection of nearest houses for each hospital, or ones that fall in the radius mark
   }
-  updateHospitalCircle () {
+  updateHospitalCircle() {
     const selectedHospital = window.controller.appState.selectedHospital;
     if (selectedHospital) {
       if (this.hospitalCircle) {

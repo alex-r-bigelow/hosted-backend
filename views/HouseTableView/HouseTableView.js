@@ -8,12 +8,10 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
     ];
     super(argObj);
 
-    window.controller.appState.on('houseSelection', () => {
-      this.render();
-    });
-    window.controller.assignments.on('dataUpdated', () => {
-      this.render();
-    });
+    const renderFunc = () => { this.render(); };
+    window.controller.appState.on('houseSelection', renderFunc);
+    window.controller.appState.on('housingFiltersChanged', renderFunc);
+    window.controller.assignments.on('dataUpdated', renderFunc);
   }
   get title () {
     return 'Properties';
@@ -31,6 +29,19 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
       return Object.assign({
         'People Assigned': counts[row.Timestamp] || 0
       }, row);
+    }).sort((a, b) => {
+      // First priority: sort by whether rows passed all filters
+      if (a.passesAllFilters && !b.passesAllFilters) {
+        return -1;
+      } else if (b.passesAllFilters && !a.passesAllFilters) {
+        return 1;
+      }
+      // Second priority: sort by distance to the currently selected hospital
+      if (a.distToSelectedHospital !== null && b.distToSelectedHospital !== null) {
+        return a.distToSelectedHospital - b.distToSelectedHospital;
+      }
+      // For now, don't enforce any other sorting criteria
+      return 0;
     });
   }
   draw () {
@@ -44,6 +55,7 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
       .classed('selected', row => {
         return row.Timestamp === window.controller.appState.selectedHouseTimestamp;
       })
+      .classed('filteredOut', row => !row.passesAllFilters)
       .on('click', row => {
         window.controller.appState.selectHouse(row.Timestamp);
       });

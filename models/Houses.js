@@ -14,6 +14,22 @@ class Houses extends GoogleSheetModel {
       this.setupAuth(key, client);
     });
   }
+  getValues () {
+    // Return copies of each house, with an extra columns for distance to the
+    // currently selected hospital, as well as whether they pass all filters
+    return super.getValues().map(house => {
+      const passesAllFilters = Object
+        .values(window.controller.appState.housingFilters)
+        .every(filterFunc => filterFunc(house));
+      const hospital = window.controller.appState.selectedHospital;
+      const distToSelectedHospital = hospital &&
+        window.controller.appState.distanceBetween(hospital.latlng, house);
+      return Object.assign({
+        passesAllFilters,
+        distToSelectedHospital
+      }, house);
+    });
+  }
   get loggedInAndLoaded () {
     return this.status === GoogleSheetModel.STATUS.SIGNED_IN &&
       !!this.getValues();

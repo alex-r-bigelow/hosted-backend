@@ -21,7 +21,14 @@ class People extends Model {
     }
   }
   getValues () {
-    return this._currentTable;
+    // Return copies of each person, with an extra column indicating whether
+    // they pass all the current filters
+    return this._currentTable.map(person => {
+      const passesAllFilters = Object
+        .values(window.controller.appState.personFilters)
+        .every(filterFunc => filterFunc(person));
+      return Object.assign({ passesAllFilters }, person);
+    });
   }
   getHeaders () {
     return this._currentHeaders;

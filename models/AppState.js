@@ -31,15 +31,30 @@ class AppState extends Model {
     this.selectedHouseTimestamp = timestamp;
     this.trigger('houseSelection');
   }
+  addHousingFilter (key, func) {
+    this.housingFilters[key] = func;
+    this.trigger('housingFiltersChanged');
+  }
+  removeHousingFilter (key) {
+    delete this.housingFilters[key];
+    this.trigger('housingFiltersChanged');
+  }
+  addPersonFilter (key, func) {
+    this.personFilters[key] = func;
+    this.trigger('personFiltersChanged');
+  }
+  removePersonFilter (key) {
+    delete this.personFilters[key];
+    this.trigger('personFiltersChanged');
+  }
   selectHospital (hospital) {
     this.selectedHospital = hospital;
-    // TODO: add a personFilter AND a housingFilter
-    this.addHouseFilter({
-      key: 'hospital',
-      filterFunc: house => {
-        return
-      }
+
+    // Add a housing filter AND a person filter
+    this.addHousingFilter('hospital', house => {
+      return this.houseIsWithinRangeOfSelectedHospital(house);
     });
+
     // TODO: once we know the name of the column where people report
     // the hospital that they're associated with... (also doing something
     // to make sure the strings will match)
@@ -54,6 +69,30 @@ class AppState extends Model {
     */
 
     this.trigger('hospitalSelection');
+  }
+  distanceBetween (a, b) {
+    // factor   .001 of lat or lng is 111.32m
+    const convFactor = 111.32 / 0.001;
+
+    const deltaLng = Math.abs(a.lng - b.lng);
+    const deltaLat = Math.abs(a.lat - b.lat);
+
+    const deltaXMeters = deltaLng * convFactor;
+    const deltaYMeters = deltaLat * convFactor;
+
+    const dist = Math.sqrt(Math.pow(deltaXMeters, 2) + Math.pow(deltaYMeters, 2));
+
+    // Convert to miles
+    return dist / 1800;
+  }
+  houseIsWithinRangeOfSelectedHospital (house) {
+    if (this.selectedHospital === null) {
+      // No hospital selected; treat all houses as if they are in range
+      return true;
+    } else {
+      // distance is less than 1.5 miles
+      return this.distanceBetween(this.selectedHospital.latlng, house) < 1.5;
+    }
   }
   clearSelections () {
     this.selectedHouseTimestamp = null;

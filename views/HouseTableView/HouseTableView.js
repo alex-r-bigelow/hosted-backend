@@ -11,6 +11,7 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
     const renderFunc = () => { this.render(); };
     window.controller.appState.on('houseSelection', renderFunc);
     window.controller.appState.on('housingFiltersChanged', renderFunc);
+    window.controller.houses.on('dataUpdated', renderFunc);
     window.controller.assignments.on('dataUpdated', renderFunc);
   }
   get title () {

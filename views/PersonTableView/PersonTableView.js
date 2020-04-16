@@ -9,24 +9,20 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
     ];
     super(argObj);
 
-    window.controller.people.on('dataUpdated', () => {
-      this.render();
-    });
-    window.controller.appState.on('peopleSelection', () => {
-      this.render();
-    });
-    window.controller.assignments.on('dataUpdated', () => {
-      this.render();
-    });
+    const renderFunc = () => { this.render(); };
+    window.controller.appState.on('peopleSelection', renderFunc);
+    window.controller.appState.on('personFiltersChanged', renderFunc);
+    window.controller.people.on('dataUpdated', renderFunc);
+    window.controller.assignments.on('dataUpdated', renderFunc);
   }
   get title () {
     return 'People';
   }
-  getHeaders () {
+  getTableHeaders () {
     const nativeHeaders = window.controller.people.getHeaders();
     return ['Currently Assigned'].concat(nativeHeaders);
   }
-  getTable () {
+  getTableRows () {
     const lastAssignments = window.controller.assignments.getLastAssignments();
     return window.controller.people.getValues().map(person => {
       const tempPerson = Object.assign({
@@ -34,12 +30,6 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
       }, person);
       return tempPerson;
     });
-  }
-  getTableHeaders () {
-    return this.getHeaders();
-  }
-  getTableRows () {
-    return this.getTable();
   }
   draw () {
     super.draw();
@@ -49,6 +39,7 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
         return window.controller.appState.selectedPeopleTimestamps
           .indexOf(row.Timestamp) !== -1;
       })
+      .classed('filteredOut', row => !row.passesAllFilters)
       .on('click', row => {
         const keepPrior = d3.event.ctrlKey || d3.event.metaKey;
         window.controller.appState.selectPerson(row.Timestamp, keepPrior);

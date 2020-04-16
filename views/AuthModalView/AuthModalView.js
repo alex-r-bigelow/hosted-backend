@@ -19,6 +19,14 @@ class AuthModalView extends ModalMixin(View) {
       }
       this.render();
     });
+    window.controller.people.on('dataUpdated', () => { this.render(); });
+    window.controller.people.on('statusChanged', () => {
+      if (window.controller.people.status === GoogleSheetModel.STATUS.ERROR) {
+        // Let the user try to log in again if there's an error
+        this.startedLogin = false;
+      }
+      this.render();
+    });
     window.controller.assignments.on('dataUpdated', () => { this.render(); });
     window.controller.assignments.on('statusChanged', () => {
       if (window.controller.assignments.status === GoogleSheetModel.STATUS.ERROR) {
@@ -30,19 +38,22 @@ class AuthModalView extends ModalMixin(View) {
   }
   get isReady () {
     return window.controller.houses.loggedInAndLoaded &&
+           window.controller.people.loggedInAndLoaded &&
            window.controller.assignments.loggedInAndLoaded;
-    // TODO: validate this for people too when we figure out SurveyMonkey
   }
   get isLoggedOut () {
     return window.controller.houses.status === GoogleSheetModel.STATUS.SIGNED_OUT ||
+      window.controller.people.status === GoogleSheetModel.STATUS.SIGNED_OUT ||
       window.controller.assignments.status === GoogleSheetModel.STATUS.SIGNED_OUT;
   }
   get isPending () {
     return window.controller.houses.status === GoogleSheetModel.STATUS.PENDING ||
+      window.controller.people.status === GoogleSheetModel.STATUS.PENDING ||
       window.controller.assignments.status === GoogleSheetModel.STATUS.PENDING;
   }
   get hasError () {
     return window.controller.houses.status === GoogleSheetModel.STATUS.ERROR ||
+      window.controller.people.status === GoogleSheetModel.STATUS.ERROR ||
       window.controller.assignments.status === GoogleSheetModel.STATUS.ERROR;
   }
   get buttons () {
@@ -67,20 +78,6 @@ class AuthModalView extends ModalMixin(View) {
         window.controller.houses.signOut();
         this.startedLogin = false;
         this.render();
-      }
-    });
-
-    this.contents.select('.upload.button').on('click', () => {
-      this.contents.select('.hiddenUpload').node().click();
-    });
-
-    this.contents.select('.hiddenUpload').on('change', function () {
-      if (this.files.length > 0) {
-        const reader = new window.FileReader();
-        reader.onload = evt => {
-          window.controller.people.updateTable(evt.target.result);
-        };
-        reader.readAsText(this.files[0]);
       }
     });
   }

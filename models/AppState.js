@@ -1,7 +1,7 @@
 import { Model } from '../node_modules/uki/dist/uki.esm.js';
 
 class AppState extends Model {
-  constructor () {
+  constructor() {
     super();
 
     this.personFilters = {};
@@ -12,7 +12,7 @@ class AppState extends Model {
 
     this.selectedHospital = null;
   }
-  selectPerson (timestamp, keepPrior = false) {
+  selectPerson(timestamp, keepPrior = false) {
     if (keepPrior) {
       // Toggle
       const index = this.selectedPeopleTimestamps.indexOf(timestamp);
@@ -27,42 +27,52 @@ class AppState extends Model {
     }
     this.trigger('peopleSelection');
   }
-  selectHouse (timestamp) {
+  selectHouse(timestamp) {
     this.selectedHouseTimestamp = timestamp;
     this.trigger('houseSelection');
   }
-  addHousingFilter (key, func) {
+  addHousingFilter(key, func) {
     this.housingFilters[key] = func;
     this.trigger('housingFiltersChanged');
   }
-  removeHousingFilter (key) {
+  removeHousingFilter(key) {
     delete this.housingFilters[key];
     this.trigger('housingFiltersChanged');
   }
-  addPersonFilter (key, func) {
+  addPersonFilter(key, func) {
     this.personFilters[key] = func;
     this.trigger('personFiltersChanged');
   }
-  removePersonFilter (key) {
+  removePersonFilter(key) {
     delete this.personFilters[key];
     this.trigger('personFiltersChanged');
   }
   hoverOverZip(zip) {
-    console.log("hovering on zip",zip);
+    console.log("hovering on zip", zip);
     let layer = zip.target
     layer.setStyle({
-      color:"red",
-      weight:3,
+      color: "red",
+      weight: 3,
     })
   }
-  hoverOutZip(zip){
+  hoverOutZip(zip) {
     window.controller.zipGeoJson.resetStyle(zip.target)
   }
   zipClick(zip) {
     //perform some sort of selection on the houses inside this zipcode
-    console.log("checking zips on houses",zip.target.feature.properties)
+    console.log("checking zips on houses", zip.target.feature.properties)
+    // ZCTA5CE10 is the name for what we commonly think of as zip codes
+    let selectedZip = zip.target.feature.properties["ZCTA5CE10"]
+    // TODO: ask alex why for some reason `this` is overloaded to be a leaflet obj instead of appstate 
+    // TODO: also ask why the filter gets run 5 times?
+    if (window.controller.appState.housingFilters["zipcode"] == undefined) {
+      window.controller.appState.addHousingFilter("zipcode", house => {
+        return window.controller.appState.houseIsInZipCode(house, selectedZip)
+      })
+    }
+    window.controller.appState.trigger("zipClicked")
   }
-  selectHospital (hospital) {
+  selectHospital(hospital) {
     this.selectedHospital = hospital;
 
     // Add a housing filter AND a person filter
@@ -85,7 +95,7 @@ class AppState extends Model {
 
     this.trigger('hospitalSelection');
   }
-  distanceBetween (a, b) {
+  distanceBetween(a, b) {
     // factor   .001 of lat or lng is 111.32m
     const convFactor = 111.32 / 0.001;
 
@@ -100,7 +110,18 @@ class AppState extends Model {
     // Convert to miles
     return dist / 1800;
   }
-  houseIsWithinRangeOfSelectedHospital (house) {
+  houseIsInZipCode(house, zip) {
+    //create a regex
+    let regexZip = new RegExp(zip)
+    // TODO: figure out is the space after address going to be there always?
+    if (regexZip.test(house["Property Address "])) {
+      console.log("house in zipcode", house)
+      return true
+    } else {
+      return false
+    }
+  }
+  houseIsWithinRangeOfSelectedHospital(house) {
     if (this.selectedHospital === null) {
       // No hospital selected; treat all houses as if they are in range
       return true;
@@ -109,7 +130,7 @@ class AppState extends Model {
       return this.distanceBetween(this.selectedHospital.latlng, house) < 1.5;
     }
   }
-  clearSelections () {
+  clearSelections() {
     this.selectedHouseTimestamp = null;
     this.selectedPeopleTimestamps = [];
     this.trigger('peopleSelection');

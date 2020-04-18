@@ -9,6 +9,7 @@ class AppState extends Model {
 
     this.housingFilters = {};
     this.selectedHouseTimestamp = null;
+    this.selectedZip = null
 
     this.selectedHospital = null;
   }
@@ -51,24 +52,28 @@ class AppState extends Model {
     console.log("hovering on zip", zip);
     let layer = zip.target
     layer.setStyle({
-      color: "red",
-      weight: 3,
+      fillColor: "red",
     })
   }
   hoverOutZip(zip) {
     window.controller.zipGeoJson.resetStyle(zip.target)
   }
   zipClick(zip) {
-    //perform some sort of selection on the houses inside this zipcode
-    console.log("checking zips on houses", zip.target.feature.properties)
-    // ZCTA5CE10 is the name for what we commonly think of as zip codes
+    // undo previous zip filter
+    window.controller.appState.removeHousingFilter("zipcode")
     let selectedZip = zip.target.feature.properties["ZCTA5CE10"]
-    // TODO: ask alex why for some reason `this` is overloaded to be a leaflet obj instead of appstate 
-    // TODO: also ask why the filter gets run 5 times?
-    if (window.controller.appState.housingFilters["zipcode"] == undefined) {
-      window.controller.appState.addHousingFilter("zipcode", house => {
-        return window.controller.appState.houseIsInZipCode(house, selectedZip)
-      })
+    if (window.controller.appState.selectedZip == null || window.controller.appState.selectedZip != selectedZip) {
+      window.controller.appState.selectedZip = selectedZip
+      //perform some sort of selection on the houses inside this zipcode
+      console.log("checking zips on houses", zip.target.feature.properties)
+      // ZCTA5CE10 is the name for what we commonly think of as zip codes
+      // TODO: ask alex why for some reason `this` is overloaded to be a leaflet obj instead of appstate 
+      // TODO: also ask why the filter gets run 5 times?
+      if (window.controller.appState.housingFilters["zipcode"] == undefined) {
+        window.controller.appState.addHousingFilter("zipcode", house => {
+          return window.controller.appState.houseIsInZipCode(house, selectedZip)
+        })
+      }
     }
     window.controller.appState.trigger("zipClicked")
   }

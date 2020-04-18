@@ -47,6 +47,21 @@ class AppState extends Model {
     delete this.personFilters[key];
     this.trigger('personFiltersChanged');
   }
+  hoverOverZip(zip) {
+    console.log("hovering on zip",zip);
+    let layer = zip.target
+    layer.setStyle({
+      color:"red",
+      weight:3,
+    })
+  }
+  hoverOutZip(zip){
+    window.controller.zipGeoJson.resetStyle(zip.target)
+  }
+  zipClick(zip) {
+    //perform some sort of selection on the houses inside this zipcode
+    console.log("checking zips on houses",zip.target.feature.properties)
+  }
   selectHospital (hospital) {
     this.selectedHospital = hospital;
 

@@ -7,6 +7,7 @@ class MapView extends GoldenLayoutView {
       { type: 'css', url: 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.css' },
       { type: 'js', url: 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.js' },
       { type: 'json', url: './views/MapView/Hospitals.geojson', name: 'hospitals' },
+      {type:"json",url:"./views/MapView/az_zip.geojson",name:"ziplines"},
       { type: 'less', url: './views/MapView/style.less' }
     ];
     super(argObj);
@@ -60,6 +61,17 @@ class MapView extends GoldenLayoutView {
     }).on('click', (e) => {
       window.controller.appState.selectHospital(e);
     }).addTo(map);
+    // add the zip codes
+    let zipEventHelper =(feature,layer) => {
+      layer.on({
+        mouseover:window.controller.appState.hoverOverZip,
+        mouseout:window.controller.appState.hoverOutZip,
+        click:window.controller.appState.zipClick,
+      })
+    }
+    window.controller.zipGeoJson = L.geoJSON(this.getNamedResource("ziplines"),{
+      onEachFeature: zipEventHelper
+    }).addTo(map)
 
     return map;
   }
@@ -133,6 +145,7 @@ class MapView extends GoldenLayoutView {
       }
     }
   }
+
 }
 
 export default MapView;

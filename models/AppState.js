@@ -58,14 +58,38 @@ class AppState extends Model {
   hoverOutZip(zip) {
     window.controller.zipGeoJson.resetStyle(zip.target)
   }
+  // have to go from number to zip geojson object 
+  zipInputChanged(zipNumber) {
+    // or just check some basic stuff and then try to filter with it?
+    // check through the existing zips and figure out which matches then select it
+    // trigger zipClick on it
+    window.controller.zipGeoJson.eachLayer((layer)=> {
+      // clear red style on all
+      window.controller.zipGeoJson.resetStyle(layer)
+      if (zipNumber == layer.feature.properties["ZCTA5CE10"]) {
+        // perform a manual zipClic
+        layer.setStyle({
+          fillColor:"red"
+        })
+        this.zipClick(zipNumber)
+      }
+    })
+
+    
+  }
   zipClick(zip) {
     // undo previous zip filter
     window.controller.appState.removeHousingFilter("zipcode")
-    let selectedZip = zip.target.feature.properties["ZCTA5CE10"]
+    // if zip is a layer from event not 
+    let selectedZip 
+    if (zip.target != undefined) {
+      selectedZip = zip.target.feature.properties["ZCTA5CE10"]
+    } else {
+      // the zip is already just a string
+      selectedZip = zip
+    }
     if (window.controller.appState.selectedZip == null || window.controller.appState.selectedZip != selectedZip) {
       window.controller.appState.selectedZip = selectedZip
-      //perform some sort of selection on the houses inside this zipcode
-      console.log("checking zips on houses", zip.target.feature.properties)
       // ZCTA5CE10 is the name for what we commonly think of as zip codes
       // TODO: ask alex why for some reason `this` is overloaded to be a leaflet obj instead of appstate 
       // TODO: also ask why the filter gets run 5 times?

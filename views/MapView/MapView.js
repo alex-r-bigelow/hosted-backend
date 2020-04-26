@@ -31,6 +31,22 @@ class MapView extends GoldenLayoutView {
     // for each hospitalhouse as key, simply mark true, and break out of the looping if so
     this.hospitalHousePairs = {};
     this.leafletMap = this.makeMap(mapContainer);
+    // add the input line for searching zips
+    // must have input line, that searches on change
+    // do on change call the window controller, then have the window.controller.appstate on(zipinput)
+    const inputContainer = this.content.append("div")
+    this.makeZipInput(inputContainer)
+
+    
+
+  }
+  makeZipInput(inputContainer) {
+    // add an input
+    let inp = inputContainer.append("input")
+    inp.attr("id","zipInput")
+    inp.on("input",()=> {
+      window.controller.appState.zipInputChanged(inp.node().value)
+    })
   }
   makeMap(mapContainer) {
     const map = L.map(mapContainer, {

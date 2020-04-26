@@ -60,6 +60,10 @@ class AppState extends Model {
   }
   // have to go from number to zip geojson object 
   zipInputChanged(zipNumber) {
+    // zips must be 5
+    if (zipNumber.length < 5 || zipNumber.length > 5){ 
+      return
+    }
     // or just check some basic stuff and then try to filter with it?
     // check through the existing zips and figure out which matches then select it
     // trigger zipClick on it

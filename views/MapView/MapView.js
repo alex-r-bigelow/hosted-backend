@@ -34,14 +34,20 @@ class MapView extends GoldenLayoutView {
     // add the input line for searching zips
     // must have input line, that searches on change
     // do on change call the window controller, then have the window.controller.appstate on(zipinput)
-    const inputContainer = this.content.append("div")
+    const inputContainer = this.content.insert("div","#mapcontainer")
+    inputContainer.attr("id","zipInputHolder")
     this.makeZipInput(inputContainer)
 
     
 
   }
   makeZipInput(inputContainer) {
+    // add textual description
+    let title = inputContainer.append("p")
+    title.text("ZipCode Selector")
+
     // add an input
+
     let inp = inputContainer.append("input")
     inp.attr("id","zipInput")
     inp.on("input",()=> {

@@ -184,7 +184,7 @@ class AppState extends Model {
   }
   //house timestamp
   mapHouseSelect(houseTS) {
-    this.selectedHouseTimestamp = timestamp;
+    this.selectedHouseTimestamp = houseTS;
     this.trigger('houseSelection');
   }
   clearSelections() {

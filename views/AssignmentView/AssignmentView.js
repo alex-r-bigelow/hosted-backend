@@ -28,13 +28,14 @@ class AssignmentView extends GoldenLayoutView {
   }
   getPotentialAssignment () {
     const assignerTag = this.d3el.select('#assignerTag').node();
-    const lastAssignments = window.controller.assignments.getLastAssignments();
+    const lastAssignments = window.controller.assignments.getAllAssignments();
     const temp = {
       house: window.controller.appState.selectedHouseTimestamp,
       people: window.controller.appState.selectedPeopleTimestamps,
       caseWorker: assignerTag.value || assignerTag.placeholder
     };
-    temp.reassign = temp.people.some(pTime => !!lastAssignments[pTime]);
+
+    temp.reassign = temp.people.some(pTime => !!lastAssignments.current[pTime].house);
     return temp;
   }
   draw () {

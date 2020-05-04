@@ -30,7 +30,7 @@ const TableViewMixin = function (superclass) {
       this.headers = this.headers.merge(headersEnter);
 
       this.headers.text(d => {
-        return d.length > 10 ? d.slice(0, 10) + '...' : d;
+        return d;
       });
       this.headers.attr('title', d => d);
 

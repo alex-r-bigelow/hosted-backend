@@ -1,16 +1,20 @@
 .TableView {
   table {
     border-collapse: collapse;
+    font-size:8px;
   }
   thead {
     border-bottom: 1px solid black;
+  }
+  td {
+    border:solid #8080804f 1px;
   }
   th, td {
     text-align: left;
     vertical-align: bottom;
     padding: 2px;
     & > div {
-      max-height: 3em;
+      max-height: 8em;
       overflow: hidden;
       text-overflow: ellipsis;
     }

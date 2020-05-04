@@ -1,7 +1,7 @@
 import { GoogleSheetModel } from '../node_modules/uki/dist/uki.esm.js';
 
 class Assignments extends GoogleSheetModel {
-  constructor () {
+  constructor() {
     super([
       { type: 'json', url: 'models/google.json', name: 'google' }
     ], {
@@ -14,11 +14,11 @@ class Assignments extends GoogleSheetModel {
       this.setupAuth(key, client);
     });
   }
-  get loggedInAndLoaded () {
+  get loggedInAndLoaded() {
     return this.status === GoogleSheetModel.STATUS.SIGNED_IN &&
       !!this.getValues();
   }
-  getLastAssignments () {
+  getLastAssignments() {
     const lastAssignments = {};
     for (const assignment of this.getValues()) {
       if (lastAssignments[assignment['Person Timestamp']] === undefined) {
@@ -27,7 +27,31 @@ class Assignments extends GoogleSheetModel {
     }
     return lastAssignments;
   }
-  getAssignmentCounts () {
+  // unassign aware counts
+  getHouseCounts() {
+    // this is meant to return a house time stamp accurate count
+    // move person object from place to place
+    // strip out the missing
+    let assignments = this.getValues().sort((a,b)=> {
+      return (new Date(a.Timestamp)) - (new Date(b.Timestamp))
+    })
+    let peoplePlaces = {}
+    assignments.map(assig=> {
+      // overwrites previous entries so that whats left is current state
+      peoplePlaces[assig["Person Timestamp"]] = assig["House Timestamp"]
+    })
+    let places ={}
+    for (let e in peoplePlaces) {
+      if (places[peoplePlaces[e]] === undefined) {
+        places[peoplePlaces[e]] = 1
+      } else {
+        places[peoplePlaces[e]]+=1
+      }
+
+    }
+    return places
+  }
+  getAssignmentCounts() {
     const currentAssignments = {};
     const assignmentCounts = {};
     for (const assignment of this.getValues().slice().reverse()) {
@@ -45,7 +69,7 @@ class Assignments extends GoogleSheetModel {
     }
     return assignmentCounts;
   }
-  addAssignments (rows) {
+  addAssignments(rows) {
     this.addRows(rows);
   }
 }

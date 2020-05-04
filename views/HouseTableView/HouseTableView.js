@@ -25,7 +25,7 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
     return ['People Assigned'].concat(nativeHeaders);
   }
   getTableRows () {
-    const counts = window.controller.assignments.getAssignmentCounts();
+    const counts = window.controller.assignments.getHouseCounts();
     return window.controller.houses.getValues().map(row => {
       return Object.assign({
         'People Assigned': counts[row.Timestamp] || 0

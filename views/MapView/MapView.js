@@ -17,6 +17,10 @@ class MapView extends GoldenLayoutView {
 
     window.controller.appState.on('hospitalSelection', () => { this.render(); });
     window.controller.appState.on("zipClicked",()=> {this.render();})
+    window.controller.appState.on("generatedHouseClick",()=> {
+      this.simulateHouseClick()
+      this.render()
+    })
     window.controller.houses.on('dataUpdated', () => { this.render(); });
   }
   get title() {
@@ -135,7 +139,10 @@ class MapView extends GoldenLayoutView {
             .bindPopup(`<p>House Located: ${house['Property Address ']}</p>
                         <p>Contact: ${house['Primary Contact Name']},
                           ${house['Primary Contact Email Address']},
-                          ${house['Primary Contact Phone Number']}`);
+                          ${house['Primary Contact Phone Number']}`)
+            .on("click",(e)=> {
+              window.controller.appState.mapHouseSelect(house["Timestamp"])
+            });
         }
       }
     });
@@ -145,6 +152,10 @@ class MapView extends GoldenLayoutView {
         marker.setIcon(greyHouseIcon);
       }
     }
+  }
+  simulateHouseClick(){
+    // use the appstate house identified
+    this.houseMarkers[window.controller.appState.selectedHouseLatLng].fire("click")
   }
   updateHospitalCircle() {
     const selectedHospital = window.controller.appState.selectedHospital;

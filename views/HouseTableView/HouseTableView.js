@@ -54,7 +54,12 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
 
     this.rows
       .classed('selected', row => {
-        return row.Timestamp === window.controller.appState.selectedHouseTimestamp;
+        if (row.Timestamp === window.controller.appState.selectedHouseTimestamp) {
+          // set the window.controller.appState 
+          window.controller.appState.selectedHouseLatLng = row.lat+","+row.lng
+          return true
+        }
+        return false
       })
       .classed('filteredOut', row => !row.passesAllFilters)
       .on('click', row => {

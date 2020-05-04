@@ -9,6 +9,7 @@ class AppState extends Model {
 
     this.housingFilters = {};
     this.selectedHouseTimestamp = null;
+    this.selectedHouseLatLng = null
     this.selectedZip = null
 
     this.selectedHospital = null;
@@ -31,6 +32,9 @@ class AppState extends Model {
   selectHouse(timestamp) {
     this.selectedHouseTimestamp = timestamp;
     this.trigger('houseSelection');
+
+    // trigger a map house click on the correct icon
+    this.trigger("generatedHouseClick")
   }
   addHousingFilter(key, func) {
     this.housingFilters[key] = func;
@@ -162,6 +166,11 @@ class AppState extends Model {
       // distance is less than 1.5 miles
       return this.distanceBetween(this.selectedHospital.latlng, house) < 1.5;
     }
+  }
+  //house timestamp
+  mapHouseSelect(houseTS) {
+    this.selectedHouseTimestamp = timestamp;
+    this.trigger('houseSelection');
   }
   clearSelections() {
     this.selectedHouseTimestamp = null;

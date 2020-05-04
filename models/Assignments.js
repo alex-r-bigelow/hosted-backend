@@ -18,7 +18,35 @@ class Assignments extends GoogleSheetModel {
     return this.status === GoogleSheetModel.STATUS.SIGNED_IN &&
       !!this.getValues();
   }
-  getLastAssignments() {
+  // meant to be used for person table current assignment resolution
+  // last assignments seems to be missing some logic that unassignment influences
+  getAllAssignments() {
+    // have
+    const allAssignments ={
+      all:{},
+      current:{}
+    }
+    for (const assignment of this.getValues()) {
+      allAssignments.all[assignment.Timestamp] = assignment
+      // put in current if that person stamp is missing, but if found do a time comparison
+      if (allAssignments.current[assignment["Person Timestamp"]] === undefined) {
+        // use house value, if this is null we know they aren't assigned
+        allAssignments.current[assignment["Person Timestamp"]] = {house:assignment["House Timestamp"],Timestamp:assignment.Timestamp}
+      } else {
+        let currentTime = new Date(allAssignments.current[assignment["Person Timestamp"]].Timestamp)
+        let otherTime = new Date(assignment.Timestamp)
+        if (otherTime > currentTime) {
+          // othertime is more recent, update allAssign current
+          allAssignments.current[assignment["Person Timestamp"]] = {house:assignment["House Timestamp"],Timestamp:assignment.Timestamp}
+
+        }
+      }
+    }
+    return allAssignments
+
+  }
+  getLastAssignments () {
+    // this needs some indication of order or there's nothing preventing older entries trumping recent
     const lastAssignments = {};
     for (const assignment of this.getValues()) {
       if (lastAssignments[assignment['Person Timestamp']] === undefined) {

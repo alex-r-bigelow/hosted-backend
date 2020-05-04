@@ -13,6 +13,7 @@ class AppState extends Model {
     this.selectedZip = null
 
     this.selectedHospital = null;
+    this.prevSelectedHospital = null
   }
   selectPerson(timestamp, keepPrior = false) {
     if (keepPrior) {
@@ -65,31 +66,31 @@ class AppState extends Model {
   // have to go from number to zip geojson object 
   zipInputChanged(zipNumber) {
     // zips must be 5
-    if (zipNumber.length < 5 || zipNumber.length > 5){ 
+    if (zipNumber.length < 5 || zipNumber.length > 5) {
       return
     }
     // or just check some basic stuff and then try to filter with it?
     // check through the existing zips and figure out which matches then select it
     // trigger zipClick on it
-    window.controller.zipGeoJson.eachLayer((layer)=> {
+    window.controller.zipGeoJson.eachLayer((layer) => {
       // clear red style on all
       window.controller.zipGeoJson.resetStyle(layer)
       if (zipNumber == layer.feature.properties["ZCTA5CE10"]) {
         // perform a manual zipClic
         layer.setStyle({
-          fillColor:"red"
+          fillColor: "red"
         })
         this.zipClick(zipNumber)
       }
     })
 
-    
+
   }
   zipClick(zip) {
     // undo previous zip filter
     window.controller.appState.removeHousingFilter("zipcode")
     // if zip is a layer from event not 
-    let selectedZip 
+    let selectedZip
     if (zip.target != undefined) {
       selectedZip = zip.target.feature.properties["ZCTA5CE10"]
     } else {
@@ -110,6 +111,20 @@ class AppState extends Model {
     window.controller.appState.trigger("zipClicked")
   }
   selectHospital(hospital) {
+    if (this.selectedHospital) {
+
+      if (this.selectedHospital.layer.feature.properties.name == hospital.layer.feature.properties.name) {
+        // same one toggle it off
+        this.trigger("removeCircle")
+        // clear filters
+        this.removeHousingFilter("hospital")
+        this.trigger("hospitalSelection")
+        //make the selected hospital null
+        this.selectedHospital = null
+        return
+
+      }
+    }
     this.selectedHospital = hospital;
 
     // Add a housing filter AND a person filter

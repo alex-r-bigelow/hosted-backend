@@ -15,6 +15,7 @@ class MapView extends GoldenLayoutView {
     this.houseMarkers = {};
     this.hospitalCircle = null;
 
+    window.controller.appState.on("removeCircle",()=>{this.removeCircle()})
     window.controller.appState.on('hospitalSelection', () => { this.render(); });
     window.controller.appState.on("zipClicked",()=> {this.render();})
     window.controller.appState.on("generatedHouseClick",()=> {
@@ -109,8 +110,8 @@ class MapView extends GoldenLayoutView {
     }
     this.leafletMap.invalidateSize();
 
-    this.updateHouseMarkers();
     this.updateHospitalCircle();
+    this.updateHouseMarkers();
   }
   updateHouseMarkers() {
     const blackHouseIcon = L.icon({
@@ -156,6 +157,12 @@ class MapView extends GoldenLayoutView {
   simulateHouseClick(){
     // use the appstate house identified
     this.houseMarkers[window.controller.appState.selectedHouseLatLng].fire("click")
+  }
+  removeCircle() {
+    if (this.hospitalCircle) {
+      // Remove the old circle
+      this.hospitalCircle.remove();
+    }
   }
   updateHospitalCircle() {
     const selectedHospital = window.controller.appState.selectedHospital;

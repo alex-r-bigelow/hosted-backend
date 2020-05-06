@@ -17,7 +17,10 @@ class MapView extends GoldenLayoutView {
 
     window.controller.appState.on('hospitalSelection', () => { this.render(); });
     window.controller.appState.on('zipSelection', () => { this.render(); });
-    window.controller.appState.on('houseSelection', () => { this.render(); });
+    window.controller.appState.on('houseSelection', () => {
+      this.updatePopup();
+      this.render();
+    });
     window.controller.houses.on('dataUpdated', () => { this.render(); });
   }
   get title () {
@@ -125,7 +128,7 @@ class MapView extends GoldenLayoutView {
     window.controller.houses.getValues().forEach(house => {
       // Only show houses that have lat lng and pass all the filters
       if (house.lat !== 'fail' && house.passesAllFilters) {
-        const markerKey = house.lat + ',' + house.lng;
+        const markerKey = house.Timestamp;
         housesThatPassed[markerKey] = true;
         if (this.houseMarkers[markerKey]) {
           // This house marker already exists, make sure it has a black icon
@@ -150,6 +153,17 @@ class MapView extends GoldenLayoutView {
       if (!housesThatPassed[markerKey]) {
         marker.setIcon(greyHouseIcon);
       }
+    }
+  }
+  updatePopup () {
+    const houseTimestamp = window.controller.appState.selectedHouseTimestamp;
+    if (houseTimestamp && this.houseMarkers[houseTimestamp]) {
+      // Selected a house (maybe not from the map); make sure the popup is open
+      this.houseMarkers[houseTimestamp].openPopup();
+    } else {
+      // Clicked on a house without a valid lat / lng or deselected a house,
+      // close all popups
+      this.leafletMap.closePopup();
     }
   }
   updateHospitalCircle () {

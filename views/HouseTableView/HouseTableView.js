@@ -59,7 +59,6 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
       .classed('filteredOut', row => !row.passesAllFilters)
       .on('click', row => {
         window.controller.appState.selectHouse(row.Timestamp);
-        window.controller.appState.selectedHouseLatLng = row['lat'] + ',' + row['lng'];
       });
   }
 }

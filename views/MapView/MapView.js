@@ -2,12 +2,12 @@
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
 
 class MapView extends GoldenLayoutView {
-  constructor(argObj) {
+  constructor (argObj) {
     argObj.resources = [
       { type: 'css', url: 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.css' },
       { type: 'js', url: 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.js' },
       { type: 'json', url: './views/MapView/Hospitals.geojson', name: 'hospitals' },
-      { type: "json", url: "./views/MapView/az_zip.geojson", name: "ziplines" },
+      { type: 'json', url: './views/MapView/az_zip.geojson', name: 'ziplines' },
       { type: 'less', url: './views/MapView/style.less' }
     ];
     super(argObj);
@@ -15,19 +15,19 @@ class MapView extends GoldenLayoutView {
     this.houseMarkers = {};
     this.hospitalCircle = null;
 
-    window.controller.appState.on("removeCircle",()=>{this.removeCircle()})
+    window.controller.appState.on('removeCircle', () => { this.removeCircle(); });
     window.controller.appState.on('hospitalSelection', () => { this.render(); });
-    window.controller.appState.on("zipClicked",()=> {this.render();})
-    window.controller.appState.on("generatedHouseClick",()=> {
-      this.simulateHouseClick()
-      this.render()
-    })
+    window.controller.appState.on('zipClicked', () => { this.render(); });
+    window.controller.appState.on('generatedHouseClick', () => {
+      this.simulateHouseClick();
+      this.render();
+    });
     window.controller.houses.on('dataUpdated', () => { this.render(); });
   }
-  get title() {
+  get title () {
     return 'Map';
   }
-  setup() {
+  setup () {
     super.setup();
     // div holding the actual map elements
     const mapContainer = this.content.append('div')
@@ -39,27 +39,24 @@ class MapView extends GoldenLayoutView {
     // add the input line for searching zips
     // must have input line, that searches on change
     // do on change call the window controller, then have the window.controller.appstate on(zipinput)
-    const inputContainer = this.content.insert("div","#mapcontainer")
-    inputContainer.attr("id","zipInputHolder")
-    this.makeZipInput(inputContainer)
-
-    
-
+    const inputContainer = this.content.insert('div', '#mapcontainer');
+    inputContainer.attr('id', 'zipInputHolder');
+    this.makeZipInput(inputContainer);
   }
-  makeZipInput(inputContainer) {
+  makeZipInput (inputContainer) {
     // add textual description
-    let title = inputContainer.append("p")
-    title.text("ZipCode Selector")
+    let title = inputContainer.append('p');
+    title.text('ZipCode Selector');
 
     // add an input
 
-    let inp = inputContainer.append("input")
-    inp.attr("id","zipInput")
-    inp.on("input",()=> {
-      window.controller.appState.zipInputChanged(inp.node().value)
-    })
+    let inp = inputContainer.append('input');
+    inp.attr('id', 'zipInput');
+    inp.on('input', () => {
+      window.controller.appState.zipInputChanged(inp.node().value);
+    });
   }
-  makeMap(mapContainer) {
+  makeMap (mapContainer) {
     const map = L.map(mapContainer, {
       center: [32.253460, -110.911789], // latitude, longitude in decimal degrees (find it on Google Maps with a right click!)
       zoom: 12, // can be 0-22, higher is closer
@@ -94,16 +91,16 @@ class MapView extends GoldenLayoutView {
       layer.on({
         mouseover: window.controller.appState.hoverOverZip,
         mouseout: window.controller.appState.hoverOutZip,
-        click: window.controller.appState.zipClick,
-      })
-    }
-    window.controller.zipGeoJson = L.geoJSON(this.getNamedResource("ziplines"), {
+        click: window.controller.appState.zipClick
+      });
+    };
+    window.controller.zipGeoJson = L.geoJSON(this.getNamedResource('ziplines'), {
       onEachFeature: zipEventHelper
-    }).addTo(map)
+    }).addTo(map);
 
     return map;
   }
-  draw() {
+  draw () {
     super.draw();
     if (this.isHidden || this.isLoading) {
       return;
@@ -113,7 +110,7 @@ class MapView extends GoldenLayoutView {
     this.updateHospitalCircle();
     this.updateHouseMarkers();
   }
-  updateHouseMarkers() {
+  updateHouseMarkers () {
     const blackHouseIcon = L.icon({
       iconSize: [20, 20],
       iconUrl: './views/MapView/house_icon.svg'
@@ -141,8 +138,8 @@ class MapView extends GoldenLayoutView {
                         <p>Contact: ${house['Primary Contact Name']},
                           ${house['Primary Contact Email Address']},
                           ${house['Primary Contact Phone Number']}`)
-            .on("click",(e)=> {
-              window.controller.appState.mapHouseSelect(house["Timestamp"])
+            .on('click', (e) => {
+              window.controller.appState.mapHouseSelect(house['Timestamp']);
             });
         }
       }
@@ -154,17 +151,17 @@ class MapView extends GoldenLayoutView {
       }
     }
   }
-  simulateHouseClick(){
+  simulateHouseClick () {
     // use the appstate house identified
-    this.houseMarkers[window.controller.appState.selectedHouseLatLng].fire("click")
+    this.houseMarkers[window.controller.appState.selectedHouseLatLng].fire('click');
   }
-  removeCircle() {
+  removeCircle () {
     if (this.hospitalCircle) {
       // Remove the old circle
       this.hospitalCircle.remove();
     }
   }
-  updateHospitalCircle() {
+  updateHospitalCircle () {
     const selectedHospital = window.controller.appState.selectedHospital;
     if (selectedHospital) {
       if (this.hospitalCircle) {
@@ -186,7 +183,6 @@ class MapView extends GoldenLayoutView {
       }
     }
   }
-
 }
 
 export default MapView;

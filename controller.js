@@ -31,7 +31,7 @@ const viewClassLookup = {
 };
 
 class Controller extends Model {
-  constructor() {
+  constructor () {
     super();
 
     this.people = new People();
@@ -53,7 +53,7 @@ class Controller extends Model {
       this.renderAllViews();
     })();
   }
-  setupLayout() {
+  setupLayout () {
     this.goldenLayout = new GoldenLayout({
       settings: {
         // GoldenLayout has a (really buggy) feature for popping a view out in a
@@ -75,11 +75,10 @@ class Controller extends Model {
             type: 'stack',
             content: [
               {
-                type: "component",
+                type: 'component',
                 componentName: 'HouseTableView',
                 componentState: {}
-              }
-              ,
+              },
               {
                 type: 'component',
                 componentName: 'AssignmentView',
@@ -116,7 +115,7 @@ class Controller extends Model {
       });
     }
   }
-  renderAllViews() {
+  renderAllViews () {
     if (this.modal) {
       this.modal.render();
     }
@@ -125,11 +124,11 @@ class Controller extends Model {
       view.render();
     }
   }
-  showModal(ModalViewClass) {
+  showModal (ModalViewClass) {
     const modalElement = d3.select('#modal').style('display', null);
     this.modal = new ModalViewClass(modalElement);
   }
-  hideModal() {
+  hideModal () {
     this.modal = null;
     d3.select('#modal')
       .style('display', 'none')

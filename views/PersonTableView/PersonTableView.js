@@ -25,17 +25,17 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
   getTableRows () {
     const allAssignments = window.controller.assignments.getAllAssignments();
     return window.controller.people.getValues().map(person => {
-      let assignment 
+      let assignment;
       // check for any assignment
       if (allAssignments.current[person.Timestamp] === undefined) {
-        assignment = "No"
-      } else if (allAssignments.current[person.Timestamp]["house"]==="") {
+        assignment = 'No';
+      } else if (allAssignments.current[person.Timestamp]['house'] === '') {
         // this is the result of unassignment
-        assignment = "No"
+        assignment = 'No';
       } else {
-        assignment = "Yes"
+        assignment = 'Yes';
       }
-      const tempPerson = Object.assign({"Currently Assigned":assignment},person)
+      const tempPerson = Object.assign({ 'Currently Assigned': assignment }, person);
       return tempPerson;
     });
   }

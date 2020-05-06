@@ -23,19 +23,11 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
     return ['Currently Assigned'].concat(nativeHeaders);
   }
   getTableRows () {
-    const allAssignments = window.controller.assignments.getAllAssignments();
+    const lastAssignments = window.controller.assignments.getLastAssignments();
     return window.controller.people.getValues().map(person => {
-      let assignment;
-      // check for any assignment
-      if (allAssignments.current[person.Timestamp] === undefined) {
-        assignment = 'No';
-      } else if (allAssignments.current[person.Timestamp]['house'] === '') {
-        // this is the result of unassignment
-        assignment = 'No';
-      } else {
-        assignment = 'Yes';
-      }
-      const tempPerson = Object.assign({ 'Currently Assigned': assignment }, person);
+      const tempPerson = Object.assign({
+        'Currently Assigned': lastAssignments[person.Timestamp] ? 'Yes' : 'No'
+      }, person);
       return tempPerson;
     });
   }

@@ -28,7 +28,7 @@ class AssignmentView extends GoldenLayoutView {
   }
   getPotentialAssignment () {
     const assignerTag = this.d3el.select('#assignerTag').node();
-    const lastAssignments = window.controller.assignments.getAllAssignments();
+    const lastAssignments = window.controller.assignments.getLastAssignments();
     const temp = {
       house: window.controller.appState.selectedHouseTimestamp,
       people: window.controller.appState.selectedPeopleTimestamps,

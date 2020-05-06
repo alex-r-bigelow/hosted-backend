@@ -18,69 +18,20 @@ class Assignments extends GoogleSheetModel {
     return this.status === GoogleSheetModel.STATUS.SIGNED_IN &&
       !!this.getValues();
   }
-  // meant to be used for person table current assignment resolution
-  // last assignments seems to be missing some logic that unassignment influences
-  getAllAssignments () {
-    // have
-    const allAssignments = {
-      all: {},
-      current: {}
-    };
-    for (const assignment of this.getValues()) {
-      allAssignments.all[assignment.Timestamp] = assignment;
-      // put in current if that person stamp is missing, but if found do a time comparison
-      if (allAssignments.current[assignment['Person Timestamp']] === undefined) {
-        // use house value, if this is null we know they aren't assigned
-        allAssignments.current[assignment['Person Timestamp']] = {
-          house: assignment['House Timestamp'],
-          Timestamp: assignment.Timestamp
-        };
-      } else {
-        let currentTime = new Date(allAssignments.current[assignment['Person Timestamp']].Timestamp);
-        let otherTime = new Date(assignment.Timestamp);
-        if (otherTime > currentTime) {
-          // othertime is more recent, update allAssign current
-          allAssignments.current[assignment['Person Timestamp']] = {
-            house: assignment['House Timestamp'],
-            Timestamp: assignment.Timestamp
-          };
-        }
-      }
-    }
-    return allAssignments;
-  }
   getLastAssignments () {
-    // this needs some indication of order or there's nothing preventing older entries trumping recent
     const lastAssignments = {};
-    for (const assignment of this.getValues()) {
-      if (lastAssignments[assignment['Person Timestamp']] === undefined) {
+    const sortedAssignments = this.getValues()
+      .sort((a, b) => {
+        return new Date(a.Timestamp) - new Date(b.Timestamp);
+      });
+    for (const assignment of sortedAssignments) {
+      if (!lastAssignments['House Timestamp']) {
+        delete lastAssignments[assignment['Person Timestamp']];
+      } else {
         lastAssignments[assignment['Person Timestamp']] = assignment['House Timestamp'];
       }
     }
     return lastAssignments;
-  }
-  // unassign aware counts
-  getHouseCounts () {
-    // this is meant to return a house time stamp accurate count
-    // move person object from place to place
-    // strip out the missing
-    let assignments = this.getValues().sort((a, b) => {
-      return (new Date(a.Timestamp)) - (new Date(b.Timestamp));
-    });
-    let peoplePlaces = {};
-    assignments.map(assig => {
-      // overwrites previous entries so that whats left is current state
-      peoplePlaces[assig['Person Timestamp']] = assig['House Timestamp'];
-    });
-    let places = {};
-    for (let e in peoplePlaces) {
-      if (places[peoplePlaces[e]] === undefined) {
-        places[peoplePlaces[e]] = 1;
-      } else {
-        places[peoplePlaces[e]] += 1;
-      }
-    }
-    return places;
   }
   getAssignmentCounts () {
     const currentAssignments = {};

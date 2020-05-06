@@ -1,4 +1,4 @@
-/* globals L */
+/* globals L, d3 */
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
 
 class MapView extends GoldenLayoutView {
@@ -15,13 +15,9 @@ class MapView extends GoldenLayoutView {
     this.houseMarkers = {};
     this.hospitalCircle = null;
 
-    window.controller.appState.on('removeCircle', () => { this.removeCircle(); });
     window.controller.appState.on('hospitalSelection', () => { this.render(); });
-    window.controller.appState.on('zipClicked', () => { this.render(); });
-    window.controller.appState.on('generatedHouseClick', () => {
-      this.simulateHouseClick();
-      this.render();
-    });
+    window.controller.appState.on('zipSelection', () => { this.render(); });
+    window.controller.appState.on('houseSelection', () => { this.render(); });
     window.controller.houses.on('dataUpdated', () => { this.render(); });
   }
   get title () {
@@ -53,7 +49,11 @@ class MapView extends GoldenLayoutView {
     let inp = inputContainer.append('input');
     inp.attr('id', 'zipInput');
     inp.on('input', () => {
-      window.controller.appState.zipInputChanged(inp.node().value);
+      const zip = inp.node().value;
+      if (zip.length === 5) {
+        // Only bother changing state when a valid zip code has been entered
+        window.controller.appState.selectZip(zip);
+      }
     });
   }
   makeMap (mapContainer) {
@@ -89,13 +89,12 @@ class MapView extends GoldenLayoutView {
     // add the zip codes
     let zipEventHelper = (feature, layer) => {
       layer.on({
-        mouseover: window.controller.appState.hoverOverZip,
-        mouseout: window.controller.appState.hoverOutZip,
-        click: window.controller.appState.zipClick
+        click: zip => { window.controller.appState.selectZip(zip); } // needs to be wrapped in a function or else selectZip will get called with this === the leaflet instance, not appState
       });
     };
-    window.controller.zipGeoJson = L.geoJSON(this.getNamedResource('ziplines'), {
-      onEachFeature: zipEventHelper
+    this.zipGeoJson = L.geoJSON(this.getNamedResource('ziplines'), {
+      onEachFeature: zipEventHelper,
+      className: 'zipBoundary'
     }).addTo(map);
 
     return map;
@@ -109,6 +108,8 @@ class MapView extends GoldenLayoutView {
 
     this.updateHospitalCircle();
     this.updateHouseMarkers();
+    this.updateZipLayers();
+    this.updateZipInput();
   }
   updateHouseMarkers () {
     const blackHouseIcon = L.icon({
@@ -139,7 +140,7 @@ class MapView extends GoldenLayoutView {
                           ${house['Primary Contact Email Address']},
                           ${house['Primary Contact Phone Number']}`)
             .on('click', (e) => {
-              window.controller.appState.mapHouseSelect(house['Timestamp']);
+              window.controller.appState.selectHouse(house['Timestamp']);
             });
         }
       }
@@ -151,20 +152,12 @@ class MapView extends GoldenLayoutView {
       }
     }
   }
-  simulateHouseClick () {
-    // use the appstate house identified
-    this.houseMarkers[window.controller.appState.selectedHouseLatLng].fire('click');
-  }
-  removeCircle () {
-    if (this.hospitalCircle) {
-      // Remove the old circle
-      this.hospitalCircle.remove();
-    }
-  }
   updateHospitalCircle () {
     const selectedHospital = window.controller.appState.selectedHospital;
     if (selectedHospital) {
-      if (this.hospitalCircle) {
+      // A hospital is selected; in case it's not the same as before, replace
+      // the circle
+      if (this.hospitalCircle && this.hospitalCircle !== null) {
         // Remove the old circle
         this.hospitalCircle.remove();
       }
@@ -182,6 +175,17 @@ class MapView extends GoldenLayoutView {
         this.hospitalCircle = null;
       }
     }
+  }
+  updateZipLayers () {
+    const zipNumber = window.controller.appState.selectedZip;
+    this.zipGeoJson.eachLayer((layer) => {
+      // set or clear the "selected" class
+      d3.select(layer._path).classed('selected', zipNumber === layer.feature.properties['ZCTA5CE10']);
+    });
+  }
+  updateZipInput () {
+    this.d3el.select('#zipInput')
+      .property('value', window.controller.appState.selectedZip || '');
   }
 }
 

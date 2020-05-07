@@ -16,6 +16,7 @@ class MapView extends GoldenLayoutView {
     this.hospitalCircle = null;
 
     window.controller.appState.on('hospitalSelection', () => { this.render(); });
+    window.controller.appState.on('housingFiltersChanged', () => { this.render(); });
     window.controller.appState.on('zipSelection', () => { this.render(); });
     window.controller.appState.on('houseSelection', () => {
       // We do the popup update outside of the regular render/setup/draw call
@@ -38,24 +39,42 @@ class MapView extends GoldenLayoutView {
     // for each hospitalhouse as key, simply mark true, and break out of the looping if so
     this.hospitalHousePairs = {};
     this.leafletMap = this.makeMap(mapContainer);
-    // add the input line for searching zips
-    // must have input line, that searches on change
-    // do on change call the window controller, then have the window.controller.appstate on(zipinput)
-    const inputContainer = this.content.insert('div', '#mapcontainer');
-    inputContainer.attr('id', 'zipInputHolder');
-    this.makeZipInput(inputContainer);
+
+    this.setupCustomMapControls();
   }
-  makeZipInput (inputContainer) {
-    // add textual description
-    let title = inputContainer.append('p');
-    title.text('ZipCode Selector');
+  setupCustomMapControls () {
+    const inputContainer = this.content.insert('div', '#mapcontainer');
+    inputContainer.attr('id', 'mapControlHolder');
 
-    // add an input
+    // Add radius slider label
+    inputContainer.append('label')
+      .attr('id', 'hospitalRadiusLabel')
+      .attr('for', 'hospitalRadiusSlider');
 
-    let inp = inputContainer.append('input');
-    inp.attr('id', 'zipInput');
-    inp.on('input', () => {
-      const zip = inp.node().value;
+    // Add radius slider
+    inputContainer.append('input')
+      .attr('id', 'hospitalRadiusSlider')
+      .attr('type', 'range')
+      .attr('min', 0.5)
+      .attr('max', 15)
+      .on('change', function () {
+        window.controller.appState.setHospitalRadius(this.value);
+      });
+
+    // Add a separator
+    inputContainer.append('div')
+      .classed('separator', true);
+
+    // add zip label
+    inputContainer.append('label')
+      .text('Zip Code')
+      .attr('for', 'zipInput');
+
+    // add an input for searching zips
+    const zipInput = inputContainer.append('input');
+    zipInput.attr('id', 'zipInput');
+    zipInput.on('input', () => {
+      const zip = zipInput.node().value;
       if (zip.length === 5) {
         // Only bother changing state when a valid zip code has been entered
         window.controller.appState.selectZip(zip);
@@ -115,7 +134,7 @@ class MapView extends GoldenLayoutView {
     this.updateHospitalCircle();
     this.updateHouseMarkers();
     this.updateZipLayers();
-    this.updateZipInput();
+    this.updateCustomMapControls();
   }
   updateHouseMarkers () {
     const blackHouseIcon = L.icon({
@@ -183,7 +202,7 @@ class MapView extends GoldenLayoutView {
         color: 'red',
         fillColor: '#f03',
         fillOpacity: 0.5,
-        radius: 2414.016
+        radius: 1609.344 * window.controller.appState.hospitalRadius
       }).addTo(this.leafletMap);
     } else {
       if (this.hospitalCircle) {
@@ -200,7 +219,14 @@ class MapView extends GoldenLayoutView {
       d3.select(layer._path).classed('selected', zipNumber === layer.feature.properties['ZCTA5CE10']);
     });
   }
-  updateZipInput () {
+  updateCustomMapControls () {
+    // Update the hospital radius slider and its label
+    this.d3el.select('#hospitalRadiusSlider')
+      .property('value', window.controller.appState.hospitalRadius);
+    this.d3el.select('#hospitalRadiusLabel')
+      .text(`Hospital radius (${window.controller.appState.hospitalRadius}mi)`);
+
+    // Update the number in the zip field
     this.d3el.select('#zipInput')
       .property('value', window.controller.appState.selectedZip || '');
   }

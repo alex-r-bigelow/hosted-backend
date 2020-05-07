@@ -11,6 +11,8 @@ class AppState extends Model {
     this.selectedHouseTimestamp = null;
     this.selectedZip = null;
     this.selectedHospital = null;
+
+    this.hospitalRadius = 1.5;
   }
   selectPerson (timestamp, keepPrior = false) {
     if (keepPrior) {
@@ -128,9 +130,13 @@ class AppState extends Model {
       // No hospital selected; treat all houses as if they are in range
       return true;
     } else {
-      // distance is less than 1.5 miles
-      return this.distanceBetween(this.selectedHospital.latlng, house) < 1.5;
+      // distance is less than the current radius in miles
+      return this.distanceBetween(this.selectedHospital.latlng, house) < this.hospitalRadius;
     }
+  }
+  setHospitalRadius (radius) {
+    this.hospitalRadius = radius;
+    this.trigger('housingFiltersChanged');
   }
   clearSelections () {
     this.selectedHouseTimestamp = null;

@@ -31,7 +31,7 @@ class AppState extends Model {
     this.selectedHouseTimestamp = timestamp;
     this.trigger('houseSelection');
   }
-  addHousingFilter (key, func) {
+  setHousingFilter (key, func) {
     this.housingFilters[key] = func;
     this.trigger('housingFiltersChanged');
   }
@@ -39,7 +39,7 @@ class AppState extends Model {
     delete this.housingFilters[key];
     this.trigger('housingFiltersChanged');
   }
-  addPersonFilter (key, func) {
+  setPersonFilter (key, func) {
     this.personFilters[key] = func;
     this.trigger('personFiltersChanged');
   }
@@ -58,13 +58,14 @@ class AppState extends Model {
       zip = null;
     }
     this.selectedZip = zip;
+    this.selectedHospital = null;
 
     if (this.selectedZip === null) {
       // We're deselecting; clear the filter
-      this.removeHousingFilter('zipcode');
+      this.removeHousingFilter('geographic');
     } else {
       // Add a housing filter
-      this.addHousingFilter('zipcode', house => {
+      this.setHousingFilter('geographic', house => {
         return this.houseIsInZipCode(house, this.selectedZip);
       });
     }
@@ -81,13 +82,14 @@ class AppState extends Model {
     }
 
     this.selectedHospital = hospital;
+    this.selectedZip = null;
 
     if (this.selectedHospital === null) {
       // We're deselecting; clear the filter
-      this.removeHousingFilter('hospital');
+      this.removeHousingFilter('geographic');
     } else {
       // Add a housing filter
-      this.addHousingFilter('hospital', house => {
+      this.setHousingFilter('geographic', house => {
         return this.houseIsWithinRangeOfSelectedHospital(house);
       });
     }

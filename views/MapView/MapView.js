@@ -18,6 +18,9 @@ class MapView extends GoldenLayoutView {
     window.controller.appState.on('hospitalSelection', () => { this.render(); });
     window.controller.appState.on('zipSelection', () => { this.render(); });
     window.controller.appState.on('houseSelection', () => {
+      // We do the popup update outside of the regular render/setup/draw call
+      // because we don't want to keep re-opening the popup if the user closed
+      // it already
       this.updatePopup();
       this.render();
     });

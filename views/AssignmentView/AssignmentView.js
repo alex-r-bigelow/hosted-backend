@@ -8,12 +8,8 @@ class AssignmentView extends GoldenLayoutView {
     ];
     super(argObj);
 
-    window.controller.appState.on('houseSelection', () => {
-      this.render();
-    });
-    window.controller.appState.on('peopleSelection', () => {
-      this.render();
-    });
+    window.controller.appState.on('houseSelection', () => { this.render(); });
+    window.controller.appState.on('peopleSelection', () => { this.render(); });
   }
   get title () {
     return 'Assignments';
@@ -28,14 +24,14 @@ class AssignmentView extends GoldenLayoutView {
   }
   getPotentialAssignment () {
     const assignerTag = this.d3el.select('#assignerTag').node();
-    const lastAssignments = window.controller.assignments.getAllAssignments();
+    const lastAssignments = window.controller.assignments.getLastAssignments();
     const temp = {
       house: window.controller.appState.selectedHouseTimestamp,
       people: window.controller.appState.selectedPeopleTimestamps,
       caseWorker: assignerTag.value || assignerTag.placeholder
     };
 
-    temp.reassign = temp.people.some(pTime => !!lastAssignments.current[pTime].house);
+    temp.reassign = temp.people.some(pTime => !!lastAssignments[pTime]);
     return temp;
   }
   draw () {

@@ -25,7 +25,7 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
     return ['People Assigned'].concat(nativeHeaders);
   }
   getTableRows () {
-    const counts = window.controller.assignments.getHouseCounts();
+    const counts = window.controller.assignments.getAssignmentCounts();
     return window.controller.houses.getValues().map(row => {
       return Object.assign({
         'People Assigned': counts[row.Timestamp] || 0
@@ -54,12 +54,11 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
 
     this.rows
       .classed('selected', row => {
-        return row.Timestamp === window.controller.appState.selectedHouseTimestamp
+        return row.Timestamp === window.controller.appState.selectedHouseTimestamp;
       })
       .classed('filteredOut', row => !row.passesAllFilters)
       .on('click', row => {
         window.controller.appState.selectHouse(row.Timestamp);
-        window.controller.appState.selectedHouseLatLng = row["lat"]+","+row["lng"]
       });
   }
 }

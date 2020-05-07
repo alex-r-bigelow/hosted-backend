@@ -1,7 +1,7 @@
 import { Model } from '../node_modules/uki/dist/uki.esm.js';
 
 class AppState extends Model {
-  constructor() {
+  constructor () {
     super();
 
     this.personFilters = {};
@@ -9,13 +9,12 @@ class AppState extends Model {
 
     this.housingFilters = {};
     this.selectedHouseTimestamp = null;
-    this.selectedHouseLatLng = null
-    this.selectedZip = null
-
+    this.selectedZip = null;
     this.selectedHospital = null;
-    this.prevSelectedHospital = null
+
+    this.hospitalRadius = 1.5;
   }
-  selectPerson(timestamp, keepPrior = false) {
+  selectPerson (timestamp, keepPrior = false) {
     if (keepPrior) {
       // Toggle
       const index = this.selectedPeopleTimestamps.indexOf(timestamp);
@@ -30,124 +29,77 @@ class AppState extends Model {
     }
     this.trigger('peopleSelection');
   }
-  selectHouse(timestamp) {
+  selectHouse (timestamp) {
     this.selectedHouseTimestamp = timestamp;
     this.trigger('houseSelection');
-
-    // trigger a map house click on the correct icon
-    this.trigger("generatedHouseClick")
   }
-  addHousingFilter(key, func) {
+  setHousingFilter (key, func) {
     this.housingFilters[key] = func;
     this.trigger('housingFiltersChanged');
   }
-  removeHousingFilter(key) {
+  removeHousingFilter (key) {
     delete this.housingFilters[key];
     this.trigger('housingFiltersChanged');
   }
-  addPersonFilter(key, func) {
+  setPersonFilter (key, func) {
     this.personFilters[key] = func;
     this.trigger('personFiltersChanged');
   }
-  removePersonFilter(key) {
+  removePersonFilter (key) {
     delete this.personFilters[key];
     this.trigger('personFiltersChanged');
   }
-  hoverOverZip(zip) {
-    console.log("hovering on zip", zip);
-    let layer = zip.target
-    layer.setStyle({
-      fillColor: "red",
-    })
-  }
-  hoverOutZip(zip) {
-    window.controller.zipGeoJson.resetStyle(zip.target)
-  }
-  // have to go from number to zip geojson object 
-  zipInputChanged(zipNumber) {
-    // zips must be 5
-    if (zipNumber.length < 5 || zipNumber.length > 5) {
-      return
-    }
-    // or just check some basic stuff and then try to filter with it?
-    // check through the existing zips and figure out which matches then select it
-    // trigger zipClick on it
-    window.controller.zipGeoJson.eachLayer((layer) => {
-      // clear red style on all
-      window.controller.zipGeoJson.resetStyle(layer)
-      if (zipNumber == layer.feature.properties["ZCTA5CE10"]) {
-        // perform a manual zipClic
-        layer.setStyle({
-          fillColor: "red"
-        })
-        this.zipClick(zipNumber)
-      }
-    })
-
-
-  }
-  zipClick(zip) {
-    // undo previous zip filter
-    window.controller.appState.removeHousingFilter("zipcode")
-    // if zip is a layer from event not 
-    let selectedZip
-    if (zip.target != undefined) {
-      selectedZip = zip.target.feature.properties["ZCTA5CE10"]
-    } else {
-      // the zip is already just a string
-      selectedZip = zip
-    }
-    if (window.controller.appState.selectedZip == null || window.controller.appState.selectedZip != selectedZip) {
-      window.controller.appState.selectedZip = selectedZip
+  selectZip (zip) {
+    if (zip !== null && zip.target !== undefined) {
+      // if zip is a layer from event not
       // ZCTA5CE10 is the name for what we commonly think of as zip codes
-      // TODO: ask alex why for some reason `this` is overloaded to be a leaflet obj instead of appstate 
-      // TODO: also ask why the filter gets run 5 times?
-      if (window.controller.appState.housingFilters["zipcode"] == undefined) {
-        window.controller.appState.addHousingFilter("zipcode", house => {
-          return window.controller.appState.houseIsInZipCode(house, selectedZip)
-        })
-      }
+      zip = zip.target.feature.properties['ZCTA5CE10'];
     }
-    window.controller.appState.trigger("zipClicked")
+    if (zip === this.selectedZip) {
+      // the same zip was selected; toggle it off
+      zip = null;
+    }
+    this.selectedZip = zip;
+    this.selectedHospital = null;
+
+    if (this.selectedZip === null) {
+      // We're deselecting; clear the filter
+      this.removeHousingFilter('geographic');
+    } else {
+      // Add a housing filter
+      this.setHousingFilter('geographic', house => {
+        return this.houseIsInZipCode(house, this.selectedZip);
+      });
+    }
+
+    // Let the views know that the selection changed
+    window.controller.appState.trigger('zipSelection');
   }
-  selectHospital(hospital) {
+  selectHospital (hospital) {
     if (this.selectedHospital) {
-
-      if (this.selectedHospital.layer.feature.properties.name == hospital.layer.feature.properties.name) {
-        // same one toggle it off
-        this.trigger("removeCircle")
-        // clear filters
-        this.removeHousingFilter("hospital")
-        this.trigger("hospitalSelection")
-        //make the selected hospital null
-        this.selectedHospital = null
-        return
-
+      if (this.selectedHospital.layer.feature.properties.name === hospital.layer.feature.properties.name) {
+        // Selected the same hospital as before; toggle it off
+        hospital = null;
       }
     }
+
     this.selectedHospital = hospital;
+    this.selectedZip = null;
 
-    // Add a housing filter AND a person filter
-    this.addHousingFilter('hospital', house => {
-      return this.houseIsWithinRangeOfSelectedHospital(house);
-    });
+    if (this.selectedHospital === null) {
+      // We're deselecting; clear the filter
+      this.removeHousingFilter('geographic');
+    } else {
+      // Add a housing filter
+      this.setHousingFilter('geographic', house => {
+        return this.houseIsWithinRangeOfSelectedHospital(house);
+      });
+    }
 
-    // TODO: once we know the name of the column where people report
-    // the hospital that they're associated with... (also doing something
-    // to make sure the strings will match)
-    /*
-    this.addPersonFilter({
-      key: 'hospital',
-      filterFunc: person => {
-        return person['Name/location of your primary work site'] ===
-          hospital.feature.properties.name;
-      }
-    });
-    */
-
+    // Let the views know that the selection changed
     this.trigger('hospitalSelection');
   }
-  distanceBetween(a, b) {
+  distanceBetween (a, b) {
     // factor   .001 of lat or lng is 111.32m
     const convFactor = 111.32 / 0.001;
 
@@ -162,32 +114,31 @@ class AppState extends Model {
     // Convert to miles
     return dist / 1800;
   }
-  houseIsInZipCode(house, zip) {
-    //create a regex
-    let regexZip = new RegExp(zip)
+  houseIsInZipCode (house, zip) {
+    // create a regex
+    let regexZip = new RegExp(zip);
     // TODO: figure out is the space after address going to be there always?
-    if (regexZip.test(house["Property Address "])) {
-      console.log("house in zipcode", house)
-      return true
+    if (regexZip.test(house['Property Address '])) {
+      // console.log('house in zipcode', house);
+      return true;
     } else {
-      return false
+      return false;
     }
   }
-  houseIsWithinRangeOfSelectedHospital(house) {
+  houseIsWithinRangeOfSelectedHospital (house) {
     if (this.selectedHospital === null) {
       // No hospital selected; treat all houses as if they are in range
       return true;
     } else {
-      // distance is less than 1.5 miles
-      return this.distanceBetween(this.selectedHospital.latlng, house) < 1.5;
+      // distance is less than the current radius in miles
+      return this.distanceBetween(this.selectedHospital.latlng, house) < this.hospitalRadius;
     }
   }
-  //house timestamp
-  mapHouseSelect(houseTS) {
-    this.selectedHouseTimestamp = houseTS;
-    this.trigger('houseSelection');
+  setHospitalRadius (radius) {
+    this.hospitalRadius = radius;
+    this.trigger('housingFiltersChanged');
   }
-  clearSelections() {
+  clearSelections () {
     this.selectedHouseTimestamp = null;
     this.selectedPeopleTimestamps = [];
     this.trigger('peopleSelection');

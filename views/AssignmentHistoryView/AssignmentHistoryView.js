@@ -8,15 +8,9 @@ class AssignmentHistoryView extends TableViewMixin(GoldenLayoutView) {
     ];
     super(argObj);
 
-    window.controller.appState.on('houseSelection', () => {
-      this.render();
-    });
-    window.controller.appState.on('peopleSelection', () => {
-      this.render();
-    });
-    window.controller.assignments.on('dataUpdated', () => {
-      this.render();
-    });
+    window.controller.appState.on('houseSelection', () => { this.render(); });
+    window.controller.appState.on('peopleSelection', () => { this.render(); });
+    window.controller.assignments.on('dataUpdated', () => { this.render(); });
   }
   get title () {
     return 'History';

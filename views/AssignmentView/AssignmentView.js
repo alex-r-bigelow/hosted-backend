@@ -8,12 +8,8 @@ class AssignmentView extends GoldenLayoutView {
     ];
     super(argObj);
 
-    window.controller.appState.on('houseSelection', () => {
-      this.render();
-    });
-    window.controller.appState.on('peopleSelection', () => {
-      this.render();
-    });
+    window.controller.appState.on('houseSelection', () => { this.render(); });
+    window.controller.appState.on('peopleSelection', () => { this.render(); });
   }
   get title () {
     return 'Assignments';
@@ -35,7 +31,7 @@ class AssignmentView extends GoldenLayoutView {
       caseWorker: assignerTag.value || assignerTag.placeholder
     };
 
-    temp.reassign = temp.people.some(pTime => !!lastAssignments.current[pTime].house);
+    temp.reassign = temp.people.some(pTime => !!lastAssignments[pTime]);
     return temp;
   }
   draw () {

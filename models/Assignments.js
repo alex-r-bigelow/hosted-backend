@@ -19,13 +19,16 @@ class Assignments extends GoogleSheetModel {
       !!this.getValues();
   }
   getLastAssignments () {
+    // Figure out the last assignment a person had
     const lastAssignments = {};
+    // First sort assignments by timestamp
     const sortedAssignments = this.getValues()
       .sort((a, b) => {
         return new Date(a.Timestamp) - new Date(b.Timestamp);
       });
+    // Starting at the beginning, add or remove assignments for people in order
     for (const assignment of sortedAssignments) {
-      if (!lastAssignments['House Timestamp']) {
+      if (!assignment['House Timestamp']) {
         delete lastAssignments[assignment['Person Timestamp']];
       } else {
         lastAssignments[assignment['Person Timestamp']] = assignment['House Timestamp'];
@@ -34,20 +37,13 @@ class Assignments extends GoogleSheetModel {
     return lastAssignments;
   }
   getAssignmentCounts () {
-    const currentAssignments = {};
+    // Figure out how many people are in a house; start with everyone's last
+    // assignments...
+    const lastAssignments = this.getLastAssignments();
+    // ... and count how many people are in each property
     const assignmentCounts = {};
-    for (const assignment of this.getValues().slice().reverse()) {
-      const currentAssignment = currentAssignments[assignment['Person Timestamp']];
-      if (currentAssignment) {
-        assignmentCounts[currentAssignment] -= 1;
-      }
-
-      if (assignment['House Timestamp'] !== null) {
-        assignmentCounts[assignment['House Timestamp']] = 1 + (assignmentCounts[assignment['House Timestamp']] || 0);
-        currentAssignments[assignment['Person Timestamp']] = assignment['House Timestamp'];
-      } else {
-        delete currentAssignments[assignment['Person Timestamp']];
-      }
+    for (const houseTimestamp of Object.values(lastAssignments)) {
+      assignmentCounts[houseTimestamp] = 1 + (assignmentCounts[houseTimestamp] || 0);
     }
     return assignmentCounts;
   }

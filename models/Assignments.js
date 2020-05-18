@@ -1,6 +1,7 @@
 import { GoogleSheetModel } from '../node_modules/uki/dist/uki.esm.js';
+import FlexHeaderTableMixin from './FlexHeaderTableMixin.js';
 
-class Assignments extends GoogleSheetModel {
+class Assignments extends FlexHeaderTableMixin(GoogleSheetModel) {
   constructor () {
     super([
       { type: 'json', url: 'models/google.json', name: 'google' }

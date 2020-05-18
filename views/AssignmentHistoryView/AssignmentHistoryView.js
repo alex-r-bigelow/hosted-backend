@@ -6,6 +6,7 @@ class AssignmentHistoryView extends TableViewMixin(GoldenLayoutView) {
     argObj.resources = [
       { type: 'less', url: './views/AssignmentHistoryView/style.less' }
     ];
+    argObj.tableModel = window.controller.assignments;
     super(argObj);
 
     window.controller.appState.on('houseSelection', () => { this.render(); });
@@ -16,13 +17,13 @@ class AssignmentHistoryView extends TableViewMixin(GoldenLayoutView) {
     return 'History';
   }
   get isLoading () {
-    return !window.controller.assignments.loggedInAndLoaded;
+    return !this.tableModel.loggedInAndLoaded;
   }
   getTableHeaders () {
-    return window.controller.assignments.getHeaders();
+    return this.tableModel.getHeaders();
   }
   getTableRows () {
-    return window.controller.assignments.getValues();
+    return this.tableModel.getValues();
   }
   draw () {
     super.draw();

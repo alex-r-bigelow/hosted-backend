@@ -10,7 +10,8 @@ const TableViewMixin = function (superclass) {
       ]);
       super(argObj);
 
-      this.visibleHeaders = ['Timestamp'];
+      this.tableModel = argObj.tableModel;
+      this.tableModel.on('headersUpdated', () => { this.render(); });
     }
     setup () {
       super.setup();
@@ -36,7 +37,7 @@ const TableViewMixin = function (superclass) {
       }
 
       this.headers = this.content.select('thead tr')
-        .selectAll('th').data(this.visibleHeaders);
+        .selectAll('th').data(this.tableModel.visibleHeaders);
       this.headers.exit().remove();
       const headersEnter = this.headers.enter().append('th');
       this.headers = this.headers.merge(headersEnter);
@@ -54,7 +55,7 @@ const TableViewMixin = function (superclass) {
       this.rows = this.rows.merge(rowsEnter);
 
       this.cells = this.rows.selectAll('td')
-        .data(row => this.visibleHeaders.map(header => row[header]));
+        .data(row => this.tableModel.visibleHeaders.map(header => row[header]));
       this.cells.exit().remove();
       const cellsEnter = this.cells.enter().append('td');
       this.cells = this.cells.merge(cellsEnter);
@@ -85,15 +86,9 @@ const TableViewMixin = function (superclass) {
       listItemsEnter.append('input')
         .attr('type', 'checkbox')
         .attr('id', (d, i) => `attrCheckbox${i}`)
-        .property('checked', d => this.visibleHeaders.indexOf(d) !== -1)
+        .property('checked', d => this.tableModel.visibleHeaders.indexOf(d) !== -1)
         .on('change', d => {
-          const index = this.visibleHeaders.indexOf(d);
-          if (index === -1) {
-            this.visibleHeaders.push(d);
-          } else {
-            this.visibleHeaders.splice(index, 1);
-          }
-          this.render();
+          this.tableModel.toggleAttribute(d);
         });
       listItemsEnter.append('label')
         .attr('for', (d, i) => `attrCheckbox${i}`)

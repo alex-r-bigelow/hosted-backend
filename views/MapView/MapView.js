@@ -2,7 +2,7 @@
 import GoldenLayoutView from '../common/GoldenLayoutView.js';
 
 class MapView extends GoldenLayoutView {
-  constructor (argObj) {
+  constructor(argObj) {
     argObj.resources = [
       { type: 'css', url: 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.css' },
       { type: 'js', url: 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.js' },
@@ -27,10 +27,10 @@ class MapView extends GoldenLayoutView {
     });
     window.controller.houses.on('dataUpdated', () => { this.render(); });
   }
-  get title () {
+  get title() {
     return 'Map';
   }
-  setup () {
+  setup() {
     super.setup();
     // div holding the actual map elements
     const mapContainer = this.content.append('div')
@@ -42,7 +42,7 @@ class MapView extends GoldenLayoutView {
 
     this.setupCustomMapControls();
   }
-  setupCustomMapControls () {
+  setupCustomMapControls() {
     const inputContainer = this.content.insert('div', '#mapcontainer');
     inputContainer.attr('id', 'mapControlHolder');
 
@@ -81,7 +81,7 @@ class MapView extends GoldenLayoutView {
       }
     });
   }
-  makeMap (mapContainer) {
+  makeMap(mapContainer) {
     const map = L.map(mapContainer, {
       center: [32.253460, -110.911789], // latitude, longitude in decimal degrees (find it on Google Maps with a right click!)
       zoom: 12, // can be 0-22, higher is closer
@@ -124,7 +124,7 @@ class MapView extends GoldenLayoutView {
 
     return map;
   }
-  draw () {
+  draw() {
     super.draw();
     if (this.isHidden || this.isLoading) {
       return;
@@ -136,7 +136,15 @@ class MapView extends GoldenLayoutView {
     this.updateZipLayers();
     this.updateCustomMapControls();
   }
-  updateHouseMarkers () {
+  updateHouseMarkers() {
+    const blackHotelIcon = L.icon({
+      iconSize: [20, 20],
+      iconUrl: './views/MapView/hotel_icon.svg'
+    });
+    const greyHotelIcon = L.icon({
+      iconSize: [20, 20],
+      iconUrl: './views/MapView/grey_hotel_icon.svg'
+    });
     const blackHouseIcon = L.icon({
       iconSize: [20, 20],
       iconUrl: './views/MapView/house_icon.svg'
@@ -147,23 +155,29 @@ class MapView extends GoldenLayoutView {
     });
     // First pass through houses that pass all filters
     const housesThatPassed = {};
+    const propertyType = {}
     window.controller.houses.getValues().forEach(house => {
       // Only show houses that have lat lng and pass all the filters
+      const markerKey = house.Timestamp;
+      let correctIcon
+      if (house["Hotel/House"] === "house") {
+        correctIcon = blackHouseIcon
+        propertyType[markerKey] = "house"
+      } else {
+        correctIcon = blackHotelIcon
+        propertyType[markerKey] = "hotel"
+      }
       if (house.lat !== 'fail' && house.passesAllFilters) {
-        const markerKey = house.Timestamp;
         housesThatPassed[markerKey] = true;
         if (this.houseMarkers[markerKey]) {
           // This house marker already exists, make sure it has a black icon
-          this.houseMarkers[markerKey].setIcon(blackHouseIcon);
+          this.houseMarkers[markerKey].setIcon(correctIcon);
         } else {
           // Create a new black marker
           this.houseMarkers[markerKey] = L.marker([house.lat, house.lng], {
-            icon: blackHouseIcon
+            icon: correctIcon
           }).addTo(this.leafletMap)
-            .bindPopup(`<p>House Located: ${house['Property Address ']}</p>
-                        <p>Contact: ${house['Primary Contact Name']},
-                          ${house['Primary Contact Email Address']},
-                          ${house['Primary Contact Phone Number']}`)
+            .bindPopup(`<p>Property: ${house['Property Name ']}</p>`)
             .on('click', (e) => {
               window.controller.appState.selectHouse(house['Timestamp']);
             });
@@ -172,12 +186,17 @@ class MapView extends GoldenLayoutView {
     });
     // Grey out any markers that didn't pass the filters
     for (const [markerKey, marker] of Object.entries(this.houseMarkers)) {
+
       if (!housesThatPassed[markerKey]) {
-        marker.setIcon(greyHouseIcon);
+        if (propertyType[markerKey] == "house") {
+          marker.setIcon(greyHouseIcon);
+        } else {
+          marker.setIcon(greyHotelIcon);
+        }
       }
     }
   }
-  updatePopup () {
+  updatePopup() {
     const houseTimestamp = window.controller.appState.selectedHouseTimestamp;
     if (houseTimestamp && this.houseMarkers[houseTimestamp]) {
       // Selected a house (maybe not from the map); make sure the popup is open
@@ -188,7 +207,7 @@ class MapView extends GoldenLayoutView {
       this.leafletMap.closePopup();
     }
   }
-  updateHospitalCircle () {
+  updateHospitalCircle() {
     const selectedHospital = window.controller.appState.selectedHospital;
     if (selectedHospital) {
       // A hospital is selected; in case it's not the same as before, replace
@@ -212,14 +231,14 @@ class MapView extends GoldenLayoutView {
       }
     }
   }
-  updateZipLayers () {
+  updateZipLayers() {
     const zipNumber = window.controller.appState.selectedZip;
     this.zipGeoJson.eachLayer((layer) => {
       // set or clear the "selected" class
       d3.select(layer._path).classed('selected', zipNumber === layer.feature.properties['ZCTA5CE10']);
     });
   }
-  updateCustomMapControls () {
+  updateCustomMapControls() {
     // Update the hospital radius slider and its label
     this.d3el.select('#hospitalRadiusSlider')
       .property('value', window.controller.appState.hospitalRadius);

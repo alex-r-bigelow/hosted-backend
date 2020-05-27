@@ -13,8 +13,6 @@ import AuthModalView from './views/AuthModalView/AuthModalView.js';
 
 // Main views in the app
 import PersonTableView from './views/PersonTableView/PersonTableView.js';
-import AssignmentView from './views/AssignmentView/AssignmentView.js';
-import AssignmentHistoryView from './views/AssignmentHistoryView/AssignmentHistoryView.js';
 import MapView from './views/MapView/MapView.js';
 import HouseTableView from './views/HouseTableView/HouseTableView.js';
 import PropertyDetailsView from './views/PropertyDetailsView/PropertyDetailsView.js';
@@ -23,8 +21,6 @@ import recolorImageFilter from './utils/recolorImageFilter.js';
 
 const viewClassLookup = {
   PersonTableView,
-  AssignmentView,
-  AssignmentHistoryView,
   MapView,
   HouseTableView,
   PropertyDetailsView
@@ -70,26 +66,10 @@ class Controller extends Model {
             type: 'component',
             componentName: 'PersonTableView',
             componentState: {}
-          },
-          {
-            type: 'stack',
-            content: [
-              {
-                type: 'component',
-                componentName: 'HouseTableView',
-                componentState: {}
-              },
-              {
-                type: 'component',
-                componentName: 'AssignmentView',
-                componentState: {}
-              },
-              {
-                type: 'component',
-                componentName: 'AssignmentHistoryView',
-                componentState: {}
-              }
-            ]
+          }, {
+            type: 'component',
+            componentName: 'HouseTableView',
+            componentState: {}
           }]
         }, {
           type: 'stack',

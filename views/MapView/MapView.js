@@ -26,6 +26,7 @@ class MapView extends GoldenLayoutView {
       this.render();
     });
     window.controller.houses.on('dataUpdated', () => { this.render(); });
+    window.controller.houses.on('headersUpdated', () => { this.render(); });
   }
   get title () {
     return 'Map';
@@ -177,8 +178,8 @@ class MapView extends GoldenLayoutView {
           // expects visibleAttributes to be a list of columns that are permitted
           let popupText = '';
           if (house.visibleAttributes) {
-            for (let sel of house.visibleAttributes) {
-              popupText += `<p>${house[sel]}</p>`;
+            for (let attr of house.visibleAttributes) {
+              popupText += `<p>${attr[0]}: ${attr[1]}</p>`;
             }
           } else {
             popupText = `<p>Property name: ${house['Property name']}</p>`;

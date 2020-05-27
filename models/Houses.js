@@ -1,6 +1,7 @@
 import { GoogleSheetModel } from '../node_modules/uki/dist/uki.esm.js';
+import FlexHeaderTableMixin from './FlexHeaderTableMixin.js';
 
-class Houses extends GoogleSheetModel {
+class Houses extends FlexHeaderTableMixin(GoogleSheetModel) {
   constructor () {
     super([
       { type: 'json', url: 'models/google.json', name: 'google' }
@@ -9,6 +10,14 @@ class Houses extends GoogleSheetModel {
       mode: GoogleSheetModel.MODE.AUTH_READ_WRITE,
       sheet: 'Form Responses 1'
     });
+    // Override the default visible headers
+    this.visibleHeaders = [
+      'Timestamp',
+      'Property Name',
+      'Hotel/House',
+      'Rate if hotel',
+      'Notes'
+    ];
     this.ready.then(() => {
       const { key, client } = this.getNamedResource('google');
       this.setupAuth(key, client);

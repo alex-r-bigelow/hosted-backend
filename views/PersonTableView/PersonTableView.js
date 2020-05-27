@@ -7,6 +7,7 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
     argObj.resources = [
       { type: 'less', url: './views/PersonTableView/style.less' }
     ];
+    argObj.tableModel = window.controller.people;
     super(argObj);
 
     const renderFunc = () => { this.render(); };
@@ -18,13 +19,16 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
   get title () {
     return 'People';
   }
+  get isLoading () {
+    return !this.tableModel.loggedInAndLoaded;
+  }
   getTableHeaders () {
-    const nativeHeaders = window.controller.people.getHeaders();
+    const nativeHeaders = this.tableModel.getHeaders();
     return ['Currently Assigned'].concat(nativeHeaders);
   }
   getTableRows () {
     const lastAssignments = window.controller.assignments.getLastAssignments();
-    return window.controller.people.getValues().map(person => {
+    return this.tableModel.getValues().map(person => {
       const tempPerson = Object.assign({
         'Currently Assigned': lastAssignments[person.Timestamp] ? 'Yes' : 'No'
       }, person);
@@ -33,6 +37,10 @@ class PersonTableView extends TableViewMixin(GoldenLayoutView) {
   }
   draw () {
     super.draw();
+
+    if (this.isHidden || this.isLoading) {
+      return;
+    }
 
     this.rows
       .classed('selected', row => {

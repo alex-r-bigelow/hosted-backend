@@ -6,6 +6,7 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
     argObj.resources = [
       { type: 'less', url: './views/HouseTableView/style.less' }
     ];
+    argObj.tableModel = window.controller.houses;
     super(argObj);
 
     const renderFunc = () => { this.render(); };
@@ -18,7 +19,7 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
     return 'Properties';
   }
   get isLoading () {
-    return !window.controller.houses.loggedInAndLoaded;
+    return !this.tableModel.loggedInAndLoaded;
   }
   getTableHeaders () {
     const nativeHeaders = window.controller.houses.getHeaders();

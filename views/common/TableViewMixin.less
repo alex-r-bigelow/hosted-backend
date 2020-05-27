@@ -1,22 +1,30 @@
 .TableView {
+  padding-left: 3em;
   table {
     border-collapse: collapse;
-    font-size:8px;
+    font-size: 10.5pt;
   }
-  thead {
-    border-bottom: 1px solid black;
-  }
-  td {
-    border:solid #8080804f 1px;
+  th {
+    background-color: #ccc;
   }
   th, td {
+    border: 1px solid #ccc;
     text-align: left;
     vertical-align: bottom;
     padding: 2px;
     & > div {
-      max-height: 8em;
+      max-height: 4em;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+  }
+  th {
+    position: sticky;
+    top: -1px;
+  }
+  .attributeSelector {
+    position: absolute;
+    left: 2px;
+    top: 1em;
   }
 }

@@ -64,25 +64,17 @@ class Controller extends Model {
           type: 'column',
           content: [{
             type: 'component',
-            componentName: 'PersonTableView',
-            componentState: {}
-          }, {
-            type: 'component',
             componentName: 'HouseTableView',
             componentState: {}
-          }]
-        }, {
-          type: 'stack',
-          content: [{
-            type: 'component',
-            componentName: 'MapView',
-            componentState: {}
-          },
-          {
+          }, {
             type: 'component',
             componentName: 'PropertyDetailsView',
             componentState: {}
           }]
+        }, {
+          type: 'component',
+          componentName: 'MapView',
+          componentState: {}
         }]
       }]
     }, d3.select('#layoutRoot').node());

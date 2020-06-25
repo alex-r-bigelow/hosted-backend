@@ -4,30 +4,12 @@ class AppState extends Model {
   constructor () {
     super();
 
-    this.personFilters = {};
-    this.selectedPeopleTimestamps = [];
-
     this.housingFilters = {};
     this.selectedHouseTimestamp = null;
     this.selectedZip = null;
     this.selectedHospital = null;
 
     this.hospitalRadius = 1.5;
-  }
-  selectPerson (timestamp, keepPrior = false) {
-    if (keepPrior) {
-      // Toggle
-      const index = this.selectedPeopleTimestamps.indexOf(timestamp);
-      if (index === -1) {
-        this.selectedPeopleTimestamps.push(timestamp);
-      } else {
-        this.selectedPeopleTimestamps.splice(index, 1);
-      }
-    } else {
-      // Set
-      this.selectedPeopleTimestamps = [timestamp];
-    }
-    this.trigger('peopleSelection');
   }
   selectHouse (timestamp) {
     this.selectedHouseTimestamp = timestamp;
@@ -40,14 +22,6 @@ class AppState extends Model {
   removeHousingFilter (key) {
     delete this.housingFilters[key];
     this.trigger('housingFiltersChanged');
-  }
-  setPersonFilter (key, func) {
-    this.personFilters[key] = func;
-    this.trigger('personFiltersChanged');
-  }
-  removePersonFilter (key) {
-    delete this.personFilters[key];
-    this.trigger('personFiltersChanged');
   }
   selectZip (zip) {
     if (zip !== null && zip.target !== undefined) {
@@ -140,8 +114,6 @@ class AppState extends Model {
   }
   clearSelections () {
     this.selectedHouseTimestamp = null;
-    this.selectedPeopleTimestamps = [];
-    this.trigger('peopleSelection');
     this.trigger('houseSelection');
   }
 }

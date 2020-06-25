@@ -1,18 +1,43 @@
 .HouseTableView {
+  table {
+    border-collapse: collapse;
+  }
+  th {
+    position: sticky;
+    top: 0;
+    background: var(--background-color);
+  }
+  td, th {
+    div {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 15em;
+    }
+  }
   tbody tr {
     cursor: pointer;
     &:hover {
-      background-color: #999;
+      color: var(--background-color);
+      background-color: var(--text-color-softer);
+      td {
+        border-bottom: 1px solid var(--text-color-softer);
+      }
     }
-    &.filteredOut {
-      color: #999;
-      &:hover {
-        color: white;
+    &.filteredOut,
+    &.filteredOut:hover {
+      color: var(--disabled-color);
+      background-color: var(--background-color);
+      td {
+        border-bottom: 1px solid var(--border-color-softer);
       }
     }
     &.selected {
-      background-color: #333;
-      color: white;
+      background-color: var(--accent-color);
+      color: var(--button-primary-color);
+      td {
+        border-bottom: 1px solid var(--accent-color);
+      }
     }
   }
 }

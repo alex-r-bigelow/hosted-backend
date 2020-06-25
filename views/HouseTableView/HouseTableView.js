@@ -1,37 +1,22 @@
-import GoldenLayoutView from '../common/GoldenLayoutView.js';
-import TableViewMixin from '../common/TableViewMixin.js';
+/* globals uki */
 
-class HouseTableView extends TableViewMixin(GoldenLayoutView) {
-  constructor (argObj) {
-    argObj.resources = [
-      { type: 'less', url: './views/HouseTableView/style.less' }
-    ];
-    argObj.tableModel = window.controller.houses;
-    super(argObj);
-
-    const renderFunc = () => { this.render(); };
-    window.controller.appState.on('houseSelection', renderFunc);
-    window.controller.appState.on('housingFiltersChanged', renderFunc);
-    window.controller.houses.on('dataUpdated', renderFunc);
-    window.controller.assignments.on('dataUpdated', renderFunc);
+class HouseTableView extends uki.ui.goldenlayout.GLViewMixin(
+                               uki.ui.utils.LoadingViewMixin( // eslint-disable-line indent
+                                 uki.ui.tables.FlexTableView)) { // eslint-disable-line indent
+  constructor (options) {
+    options.resources = [{ type: 'less', url: './views/HouseTableView/style.less' }];
+    super(options);
+    // Override the default visible headers
+    this.visibleHeaderIndices = ['itemIndex', 8, 2, 7, 6, 4];
   }
   get title () {
     return 'Properties';
   }
   get isLoading () {
-    return !this.tableModel.loggedInAndLoaded;
+    return !window.controller.houses.loggedInAndLoaded;
   }
-  getTableHeaders () {
-    const nativeHeaders = window.controller.houses.getHeaders();
-    return ['People Assigned'].concat(nativeHeaders);
-  }
-  getTableRows () {
-    const counts = window.controller.assignments.getAssignmentCounts();
-    return window.controller.houses.getValues().map(row => {
-      return Object.assign({
-        'People Assigned': counts[row.Timestamp] || 0
-      }, row);
-    }).sort((a, b) => {
+  getRawRows () {
+    return window.controller.houses.getRows().sort((a, b) => {
       // First priority: sort by whether rows passed all filters
       if (a.passesAllFilters && !b.passesAllFilters) {
         return -1;
@@ -46,8 +31,18 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
       return 0;
     });
   }
+  setup () {
+    super.setup(...arguments);
+
+    this.d3el.classed('HouseTableView', true);
+
+    const renderFunc = () => { this.render(); };
+    window.controller.appState.on('houseSelection', renderFunc);
+    window.controller.appState.on('housingFiltersChanged', renderFunc);
+    window.controller.houses.on('dataUpdated', renderFunc);
+  }
   draw () {
-    super.draw();
+    super.draw(...arguments);
 
     if (this.isHidden || this.isLoading) {
       return;
@@ -55,11 +50,11 @@ class HouseTableView extends TableViewMixin(GoldenLayoutView) {
 
     this.rows
       .classed('selected', row => {
-        return row.Timestamp === window.controller.appState.selectedHouseTimestamp;
+        return row.data.Timestamp === window.controller.appState.selectedHouseTimestamp;
       })
-      .classed('filteredOut', row => !row.passesAllFilters)
+      .classed('filteredOut', row => !row.data.passesAllFilters)
       .on('click', row => {
-        window.controller.appState.selectHouse(row.Timestamp);
+        window.controller.appState.selectHouse(row.data.Timestamp);
       });
   }
 }

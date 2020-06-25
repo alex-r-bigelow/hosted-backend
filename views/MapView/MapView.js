@@ -1,19 +1,26 @@
-/* globals L, d3 */
-import GoldenLayoutView from '../common/GoldenLayoutView.js';
+/* globals L, d3, uki */
 
-class MapView extends GoldenLayoutView {
-  constructor (argObj) {
-    argObj.resources = [
+class MapView extends uki.ui.goldenlayout.GLView {
+  constructor (options) {
+    options.resources = [
       { type: 'css', url: 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.css' },
       { type: 'js', url: 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.js' },
       { type: 'json', url: './views/MapView/Hospitals.geojson', name: 'hospitals' },
       { type: 'json', url: './views/MapView/az_zip.geojson', name: 'ziplines' },
       { type: 'less', url: './views/MapView/style.less' }
     ];
-    super(argObj);
+    super(options);
 
     this.houseMarkers = {};
     this.hospitalCircle = null;
+  }
+  get title () {
+    return 'Map';
+  }
+  setup () {
+    super.setup(...arguments);
+
+    this.d3el.classed('MapView', true);
 
     window.controller.appState.on('hospitalSelection', () => { this.render(); });
     window.controller.appState.on('housingFiltersChanged', () => { this.render(); });
@@ -27,14 +34,9 @@ class MapView extends GoldenLayoutView {
     });
     window.controller.houses.on('dataUpdated', () => { this.render(); });
     window.controller.houses.on('headersUpdated', () => { this.render(); });
-  }
-  get title () {
-    return 'Map';
-  }
-  setup () {
-    super.setup();
+
     // div holding the actual map elements
-    const mapContainer = this.content.append('div')
+    const mapContainer = this.d3el.append('div')
       .attr('id', 'mapcontainer').node();
 
     // for each hospitalhouse as key, simply mark true, and break out of the looping if so
@@ -44,7 +46,7 @@ class MapView extends GoldenLayoutView {
     this.setupCustomMapControls();
   }
   setupCustomMapControls () {
-    const inputContainer = this.content.insert('div', '#mapcontainer');
+    const inputContainer = this.d3el.insert('div', '#mapcontainer');
     inputContainer.attr('id', 'mapControlHolder');
 
     // Add radius slider label
@@ -157,7 +159,7 @@ class MapView extends GoldenLayoutView {
     // First pass through houses that pass all filters
     const housesThatPassed = {};
     const propertyType = {};
-    window.controller.houses.getValues().forEach(house => {
+    window.controller.houses.getRows().forEach(house => {
       // Only show houses that have lat lng and pass all the filters
       const markerKey = house.Timestamp;
       let correctIcon;
@@ -182,7 +184,7 @@ class MapView extends GoldenLayoutView {
               popupText += `<p>${attr[0]}: ${attr[1]}</p>`;
             }
           } else {
-            popupText = `<p>Property name: ${house['Property name']}</p>`;
+            popupText = `<p>Property name: ${house['Property Name']}</p>`;
           }
           // Create a new black marker
           this.houseMarkers[markerKey] = L.marker([house.lat, house.lng], {
@@ -226,10 +228,14 @@ class MapView extends GoldenLayoutView {
         // Remove the old circle
         this.hospitalCircle.remove();
       }
+      // Get the contrasting color from the theme
+      const color = window.getComputedStyle(document.documentElement)
+        .getPropertyValue('--error-color');
+
       // Add (or move) the circle to the clicked hospital
       this.hospitalCircle = L.circle(selectedHospital.latlng, {
-        color: 'red',
-        fillColor: '#f03',
+        color,
+        fillColor: color,
         fillOpacity: 0.5,
         radius: 1609.344 * window.controller.appState.hospitalRadius
       }).addTo(this.leafletMap);
@@ -244,8 +250,13 @@ class MapView extends GoldenLayoutView {
   updateZipLayers () {
     const zipNumber = window.controller.appState.selectedZip;
     this.zipGeoJson.eachLayer((layer) => {
+      const selected = zipNumber === layer.feature.properties['ZCTA5CE10'];
       // set or clear the 'selected' class
-      d3.select(layer._path).classed('selected', zipNumber === layer.feature.properties['ZCTA5CE10']);
+      d3.select(layer._path).classed('selected', selected);
+      if (selected) {
+        // Move the selected layer (if it exists) to the front
+        layer._path.parentNode.appendChild(layer._path);
+      }
     });
   }
   updateCustomMapControls () {

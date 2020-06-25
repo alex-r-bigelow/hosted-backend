@@ -17,11 +17,13 @@
   },
   "homepage": "https://github.com/alex-r-bigelow/uki-goldenlayout-boilerplate#readme",
   "dependencies": {
-    "d3": "^5.15.1",
+    "@ukijs/uki-gsheet-db": "^0.1.1",
+    "@ukijs/uki-ui": "^0.1.2",
+    "d3": "^5.16.0",
     "golden-layout": "^1.5.9",
-    "jquery": "^3.4.1",
-    "less": "^3.11.1",
-    "serve": "^11.3.0",
-    "uki": "0.5.6"
+    "jquery": "^3.5.1",
+    "less": "^3.11.3",
+    "serve": "^11.3.2",
+    "uki": "0.6.6"
   }
 }

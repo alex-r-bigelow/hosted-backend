@@ -1,11 +1,21 @@
-import GoldenLayoutView from '../common/GoldenLayoutView.js';
-import IFrameViewMixin from '../common/IFrameViewMixin.js';
+/* globals uki */
 
-class PropertyDetailsView extends IFrameViewMixin(GoldenLayoutView) {
+class PropertyDetailsView extends uki.ui.utils.EmptyStateViewMixin(
+                                    uki.ui.utils.LoadingViewMixin( // eslint-disable-line indent
+                                      uki.ui.goldenlayout.IFrameGLView)) { // eslint-disable-line indent
   constructor (argObj) {
     super(argObj);
 
     this.missingMessage = 'No property selected';
+  }
+  get title () {
+    return 'Property Details';
+  }
+  get isEmpty () {
+    return window.controller.appState.selectedHouse === undefined;
+  }
+  setup () {
+    super.setup(...arguments);
 
     window.controller.appState.on('houseSelection', () => {
       const house = window.controller.houses.selectedHouse;
@@ -23,17 +33,8 @@ class PropertyDetailsView extends IFrameViewMixin(GoldenLayoutView) {
       this.render();
     });
   }
-  get title () {
-    return 'Property Details';
-  }
-  get isEmpty () {
-    return window.controller.appState.selectedHouse === undefined;
-  }
-  draw () {
-    super.draw();
-
-    // If we don't have a URL, update the emptyStateDiv to explain why
-    this.emptyStateDiv.html(`<h3>${this.missingMessage}</h3>`);
+  get emptyMessage () {
+    return this.missingMessage;
   }
 }
 

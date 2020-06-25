@@ -1,18 +1,33 @@
 .MapView {
   #mapcontainer{
     height:100%;
-    .zipBoundary:hover,
+    .zipBoundary {
+      fill: var(--accent-color);
+      stroke: var(--accent-color);
+    }
+    .zipBoundary:hover {
+      fill: var(--error-color); // Not actually an error, but has nice contrast from --accent-color
+    }
     .zipBoundary.selected {
-      fill: red;
+      fill: var(--error-color); // Not actually an error, but has nice contrast from --accent-color
+      stroke: var(--error-color);
+    }
+    .leaflet-bar a {
+      background-color: var(--background-color);
+      border-color: var(--border-color-softer);
+      color: var(--text-color-softer);
+      &:hover {
+        color: var(--text-color-normal);
+      }
     }
   }
   #mapControlHolder {
     position: absolute;
     right: 10px;
     top: 10px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+    box-shadow: 0 1px 5px rgba(var(--shadow-color-rgb), 0.65);
     border-radius: 4px;
-    background-color: white;
+    background-color: var(--background-color);
     padding: 0.5em;
     z-index: 1000;
 
@@ -24,10 +39,10 @@
     }
     input {
       width:60px;
-      height:10%;
+      margin-bottom: 0;
     }
     .separator {
-      border-left: 1px solid #ccc;
+      border-left: 1px solid var(--border-color-softer);
       margin: 0 1em;
       height: 1em;
     }

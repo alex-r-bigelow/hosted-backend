@@ -1,112 +1,56 @@
-/* globals d3, less, GoldenLayout */
-import { Model } from './node_modules/uki/dist/uki.esm.js';
-
-// Models for managing datasets and state
-import People from './models/People.js';
+/* globals d3, uki */
 import Houses from './models/Houses.js';
-import Assignments from './models/Assignments.js';
 import AppState from './models/AppState.js';
 
 // General-purpose views
-import TooltipView from './views/TooltipView/TooltipView.js';
 import AuthModalView from './views/AuthModalView/AuthModalView.js';
 
 // Main views in the app
-import PersonTableView from './views/PersonTableView/PersonTableView.js';
 import MapView from './views/MapView/MapView.js';
 import HouseTableView from './views/HouseTableView/HouseTableView.js';
 import PropertyDetailsView from './views/PropertyDetailsView/PropertyDetailsView.js';
 
-import recolorImageFilter from './utils/recolorImageFilter.js';
-
-const viewClassLookup = {
-  PersonTableView,
-  MapView,
-  HouseTableView,
-  PropertyDetailsView
-};
-
-class Controller extends Model {
+class Controller extends uki.ui.goldenlayout.GLRootView {
   constructor () {
-    super();
-
-    this.people = new People();
-    this.houses = new Houses();
-    this.assignments = new Assignments();
-    this.appState = new AppState();
-
-    this.tooltip = new TooltipView();
-    this.setupLayout();
-    window.onresize = () => {
-      this.goldenLayout.updateSize();
-      this.renderAllViews();
-    };
-    (async () => {
-      await less.pageLoadFinished;
-      // GoldenLayout sometimes misbehaves if LESS hasn't finished loading
-      this.goldenLayout.init();
-      recolorImageFilter();
-      this.renderAllViews();
-    })();
-  }
-  setupLayout () {
-    this.goldenLayout = new GoldenLayout({
-      settings: {
-        // GoldenLayout has a (really buggy) feature for popping a view out in a
-        // separate browser window; I usually disable this unless there is a
-        // clear user need
-        showPopoutIcon: false
+    const options = {
+      d3el: d3.select('.root'),
+      resources: [{ type: 'css', url: 'root.css' }],
+      viewClassLookup: {
+        MapView,
+        HouseTableView,
+        PropertyDetailsView
       },
-      content: [{
-        type: 'row',
-        isCloseable: false,
+      glSettings: {
         content: [{
-          type: 'column',
+          type: 'row',
+          isCloseable: false,
           content: [{
-            type: 'component',
-            componentName: 'HouseTableView',
-            componentState: {}
+            type: 'column',
+            content: [{
+              type: 'component',
+              componentName: 'HouseTableView',
+              componentState: {}
+            }, {
+              type: 'component',
+              componentName: 'PropertyDetailsView',
+              componentState: {}
+            }]
           }, {
             type: 'component',
-            componentName: 'PropertyDetailsView',
+            componentName: 'MapView',
             componentState: {}
           }]
-        }, {
-          type: 'component',
-          componentName: 'MapView',
-          componentState: {}
         }]
-      }]
-    }, d3.select('#layoutRoot').node());
-    this.views = {};
-    for (const [className, ViewClass] of Object.entries(viewClassLookup)) {
-      const self = this;
-      this.goldenLayout.registerComponent(className, function (container, state) {
-        const view = new ViewClass({ container, state });
-        self.views[className] = view;
-      });
-    }
-  }
-  renderAllViews () {
-    if (this.modal) {
-      this.modal.render();
-    }
-    this.tooltip.render();
-    for (const view of Object.values(this.views)) {
-      view.render();
-    }
-  }
-  showModal (ModalViewClass) {
-    const modalElement = d3.select('#modal').style('display', null);
-    this.modal = new ModalViewClass(modalElement);
-  }
-  hideModal () {
-    this.modal = null;
-    d3.select('#modal')
-      .style('display', 'none')
-      .html('');
+      }
+    };
+    super(options);
+
+    this.ready.then(() => {
+      this.modal = new AuthModalView();
+      this.houses = new Houses();
+      this.appState = new AppState();
+    });
   }
 }
 
 window.controller = new Controller();
-window.controller.showModal(AuthModalView);

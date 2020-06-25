@@ -1,32 +1,24 @@
-import { GoogleSheetModel } from '../node_modules/uki/dist/uki.esm.js';
-import FlexHeaderTableMixin from './FlexHeaderTableMixin.js';
+/* globals uki */
 
-class Houses extends FlexHeaderTableMixin(GoogleSheetModel) {
+class Houses extends uki.google.AuthSheetModel {
   constructor () {
-    super([
-      { type: 'json', url: 'models/google.json', name: 'google' }
-    ], {
+    super({
+      resources: [
+        { type: 'json', url: 'models/google.json', name: 'google' }
+      ],
       spreadsheetId: '1Gq8sK5UVguy4OV0HpezDoNtRWOwRMFH5bOAVi66Cb-8',
-      mode: GoogleSheetModel.MODE.AUTH_READ_WRITE,
+      mode: uki.google.AuthSheetModel.MODE.AUTH_READ_WRITE,
       sheet: 'Form Responses 1'
     });
-    // Override the default visible headers
-    this.visibleHeaders = [
-      'Timestamp',
-      'Property Name',
-      'Hotel/House',
-      'Rate if hotel',
-      'Notes'
-    ];
     this.ready.then(() => {
       const { key, client } = this.getNamedResource('google');
       this.setupAuth(key, client);
     });
   }
-  getValues () {
+  getRows () {
     // Return copies of each house, with an extra columns for distance to the
     // currently selected hospital, as well as whether they pass all filters
-    return super.getValues().map(house => {
+    return super.getRows().map(house => {
       const passesAllFilters = Object
         .values(window.controller.appState.housingFilters)
         .every(filterFunc => filterFunc(house));
@@ -40,11 +32,11 @@ class Houses extends FlexHeaderTableMixin(GoogleSheetModel) {
     });
   }
   get loggedInAndLoaded () {
-    return this.status === GoogleSheetModel.STATUS.SIGNED_IN &&
-      !!this.getValues();
+    return this.status === uki.google.AuthSheetModel.STATUS.SIGNED_IN &&
+      !!this.getRows();
   }
   get selectedHouse () {
-    return this.getValues().find(d => d.Timestamp === window.controller.appState.selectedHouseTimestamp);
+    return this.getRows().find(d => d.Timestamp === window.controller.appState.selectedHouseTimestamp);
   }
 }
 

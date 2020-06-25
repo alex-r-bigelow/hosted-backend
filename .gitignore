@@ -14,11 +14,18 @@ node_modules/uki/dist/*
 
 !node_modules/@ukijs/
 node_modules/@ukijs/*
+
 !node_modules/@ukijs/uki-ui/
 node_modules/@ukijs/uki-ui/*
 !node_modules/@ukijs/uki-ui/dist/
 node_modules/@ukijs/uki-ui/dist/*
 !node_modules/@ukijs/uki-ui/dist/uki-ui.esm.js
+
+!node_modules/@ukijs/uki-gsheet-db/
+node_modules/@ukijs/uki-gsheet-db/*
+!node_modules/@ukijs/uki-gsheet-db/dist/
+node_modules/@ukijs/uki-gsheet-db/dist/*
+!node_modules/@ukijs/uki-gsheet-db/dist/uki-gsheet-db.esm.js
 
 !node_modules/d3/
 node_modules/d3/*

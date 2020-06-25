@@ -46,9 +46,10 @@ class Controller extends uki.ui.goldenlayout.GLRootView {
     super(options);
 
     this.ready.then(() => {
-      this.modal = new AuthModalView();
       this.houses = new Houses();
       this.appState = new AppState();
+      this.modal = new AuthModalView();
+      this.modal.render().then(() => { this.modal.show(); });
     });
   }
 }

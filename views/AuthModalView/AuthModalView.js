@@ -4,22 +4,44 @@ const AuthSheetModel = uki.google.AuthSheetModel;
 class AuthModalView extends uki.ui.components.ModalView {
   constructor () {
     super({
-      d3el: d3.select('#modal'),
+      d3el: d3.select('.modal'),
       resources: [
         { type: 'less', url: './views/AuthModalView/style.less' },
         { type: 'text', url: './views/AuthModalView/template.html', name: 'template' }
-      ],
-      buttons: [
-        {
-          label: 'OK',
-          className: 'ok',
-          primary: true,
-          onclick: () => { this.ok(); }
-        }
       ]
     });
-
     this.startedLogin = false;
+  }
+  get defaultButtons () {
+    return [
+      {
+        label: 'OK',
+        className: 'ok',
+        primary: true,
+        onclick: () => { this.ok(); }
+      }
+    ];
+  }
+  get defaultContent () {
+    return contentEl => {
+      contentEl.html(this.getNamedResource('template'));
+
+      contentEl.select('.google.button').on('click', () => {
+        if (!this.isPending && !this.startedLogin && !this.isReady) {
+          this.startedLogin = true;
+          window.controller.houses.signIn();
+          this.render();
+        }
+      });
+
+      contentEl.select('.logout.button').on('click', () => {
+        if (!this.isPending && !this.isLoggedOut) {
+          window.controller.houses.signOut();
+          this.startedLogin = false;
+          this.render();
+        }
+      });
+    };
   }
   get isReady () {
     return window.controller.houses.loggedInAndLoaded;
@@ -48,24 +70,6 @@ class AuthModalView extends uki.ui.components.ModalView {
         this.startedLogin = false;
       }
       this.render();
-    });
-
-    this.contents.html(this.getNamedResource('template'));
-
-    this.contents.select('.google.button').on('click', () => {
-      if (!this.isPending && !this.startedLogin && !this.isReady) {
-        this.startedLogin = true;
-        window.controller.houses.signIn();
-        this.render();
-      }
-    });
-
-    this.contents.select('.logout.button').on('click', () => {
-      if (!this.isPending && !this.isLoggedOut) {
-        window.controller.houses.signOut();
-        this.startedLogin = false;
-        this.render();
-      }
     });
   }
   draw () {
